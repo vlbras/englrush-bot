@@ -24,13 +24,13 @@ bot.on('message', msg => {
     router('/mkfolder', msg, folder.make)
     router('Delete Folder 🗑', msg, folder.remove)
 
-    router('/addwords', msg, word.add)
+    router('/add', msg, word.add)
     router('Delete Word 🗑', msg, word.remove)
 })
 
 bot.on('callback_query', msg => {
     bot.answerCallbackQuery(msg.id)
-    router('addwords', msg, word.add)
+    router('add', msg, word.add)
     router('rmfolder', msg, folder.remove)
     router('rmword', msg, word.remove)
 })

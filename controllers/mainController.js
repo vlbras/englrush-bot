@@ -8,7 +8,7 @@ class MainController {
         return bot.sendSticker(chatId, "https://cdn.tlgrm.app/stickers/552/b31/552b31fc-5e93-4360-b2c2-9ee1e43a236e/192/5.webp", mainOptions)
     }
     async create(chatId) {
-        return bot.sendMessage(chatId, `💬 Commands:\n<code>/mkfolder</code> Name - make a folder\n<code>/addwords</code> word, word, ... - add words`, { parse_mode: "HTML" })
+        return bot.sendMessage(chatId, `💬 Commands:\n<code>/mkfolder</code> Name - make a folder\n<code>/add</code> word, word, ... - add words`, { parse_mode: "HTML" })
     }
 }
 

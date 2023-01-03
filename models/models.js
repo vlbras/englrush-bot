@@ -17,6 +17,22 @@ const wordSchema = new Schema({
         type: String,
         require: true
     },
+    ru: {
+        type: String,
+        require: true,
+    },
+    description: {
+        type: String,
+        require: true,
+    },
+    transcription: {
+        type: String,
+        require: true,
+    },
+    audio: {
+        type: String,
+        require: true,
+    },
     folderId: {
         type: String,
         require: true
@@ -24,7 +40,7 @@ const wordSchema = new Schema({
     chatId: {
         type: String,
         require: true,
-    }
+    },
 })
 
 const Folder = mongoose.model('Folder', folderSchema)

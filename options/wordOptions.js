@@ -80,7 +80,7 @@ module.exports = wordOptions = async (chatId, option) => {
             })
             return array = []
         }
-        return bot.sendMessage(chatId, `❗️No word added.\n<code>/addwords</code> word, word, ... - to add words`, { parse_mode: "HTML" })
+        return bot.sendMessage(chatId, `❗️No word added.\n<code>/add</code> word, word, ... - to add words`, { parse_mode: "HTML" })
     }
     return bot.sendMessage(chatId, `❗️No folder created.\n<code>/mkfolder</code> Name - to make a folder`, { parse_mode: "HTML" })
 }

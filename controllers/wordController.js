@@ -5,17 +5,21 @@ const { Word } = require('../models/models')
 const folderOptions = require('../options/folderOptions')
 const wordOptions = require('../options/wordOptions')
 
+const wordParse = require('./wordParser')
+
 class WordController {
 
     async add(chatId, name, _id) {
         if (name) {
             if (!await Word.findOne({ name, chatId })) {
                 if (_id) {
-                    const word = new Word({ name, folderId: _id, chatId })
+                    let {ru, description, transcription, audio} = await wordParse(name)
+                    const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
                     await word.save()
-                    return bot.sendMessage(chatId, `✅ ${name} added`)
+                    await bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
+                    return bot.sendAudio(chatId, audio)
                 }
-                let option = 'addwords ' + name + " &&"
+                let option = 'add ' + name + " &&"
                 return folderOptions(chatId, option, `Select Folder:`)
             }
             return bot.sendMessage(chatId, `❗️${name} already added`)
