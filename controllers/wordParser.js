@@ -1,16 +1,22 @@
-const { By, Key, Builder, until } = require('selenium-webdriver')
-require('chromedriver')
+const puppeteer = require('puppeteer')
+const cheerio = require('cheerio')
 
-module.exports = wordParse = async(word) =>{
-    let data = {}
-    let driver = await new Builder().forBrowser("chrome").build()
-    let URL =`https://englishlib.org/dictionary/en-ru/${word}.html`
-    await driver.get(URL)
-    data.ru = await driver.findElement(By.xpath('//*[@id="block_tr"]/div/i')).getText()
-    data.transcription = await driver.findElement(By.xpath('//*[@id="us_tr_sound"]/span[1]/big')).getText()
-    data.audio = await driver.findElement(By.xpath('//*[@id="audio_us"]/source')).getAttribute('src')
-    data.description = await driver.findElement(By.xpath('//*[@id="content-tab6"]')).getText()
+module.exports = start = async (word) => {
+    const browser = await puppeteer.launch()
+    const page = await browser.newPage()
+    const url = `https://englishlib.org/dictionary/en-ru/${word}.html`
+
+    await page.goto(url)
+    const content = await page.content();
+    const $ = cheerio.load(content);
+    const data = {}
+    data.ru = $('#block_tr > div > i').text()
+    data.transcription = $('#us_tr_sound > span.transcription > big').text()
+    data.audio = $('#audio_us > source').attr('src')
+    $('#content-tab6 > b').remove()
+    data.description = $('#content-tab6:first').text()
+    data.description = data.description.substring(12, data.description.length - 6)
     console.log(data)
-    await driver.quit()
+    await browser.close()
     return data
-} 
+}

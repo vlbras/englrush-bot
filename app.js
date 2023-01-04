@@ -31,7 +31,6 @@ bot.on('message', msg => {
 
 bot.on('callback_query', msg => {
     bot.answerCallbackQuery(msg.id)
-    console.log(msg.data)
     router('add', msg, word.add)
     router('openword', msg, word.open)
     router('rmfolder', msg, folder.remove)
