@@ -13,7 +13,7 @@ class WordController {
         if (name) {
             if (!await Word.findOne({ name, chatId })) {
                 if (_id) {
-                    let {ru, description, transcription, audio} = await wordParse(name)
+                    let { ru, description, transcription, audio } = await wordParse(name)
                     const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
                     await word.save()
                     await bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
@@ -37,6 +37,16 @@ class WordController {
             return bot.sendMessage(chatId, `❗️ You can't delete folder here`)
         }
         let option = 'rmword'
+        return wordOptions(chatId, option)
+    }
+
+    async open(chatId, _id) {
+        if (_id) {
+            const {name, ru, description, transcription, audio} = await Word.findById(_id)
+            return bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
+            return bot.sendAudio(chatId, audio)
+        }
+        let option = 'openword'
         return wordOptions(chatId, option)
     }
 }

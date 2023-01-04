@@ -26,11 +26,14 @@ bot.on('message', msg => {
 
     router('/add', msg, word.add)
     router('Delete Word 🗑', msg, word.remove)
+    router('Open Word', msg, word.open)
 })
 
 bot.on('callback_query', msg => {
     bot.answerCallbackQuery(msg.id)
+    console.log(msg.data)
     router('add', msg, word.add)
+    router('openword', msg, word.open)
     router('rmfolder', msg, folder.remove)
     router('rmword', msg, word.remove)
 })
