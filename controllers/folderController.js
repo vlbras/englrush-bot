@@ -8,7 +8,7 @@ class FolderController {
 
     async make(chatId, name) {
         if (name) {
-            if(/^[a-zA-Z0-9]+$/.test(name)){
+            if(/^[a-zA-Z0-9 ]+$/.test(name)){
                 if (!await Folder.findOne({ name, chatId })) {
                     const folder = new Folder({ name, chatId })
                     await folder.save()

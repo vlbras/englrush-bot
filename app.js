@@ -24,10 +24,10 @@ bot.on('message', msg => {
     router('/start', msg, main.start)
     router('Create Quiz ➕', msg, main.create)
 
-    router('/mkfolder', msg, folder.make)
+    router('/folder', msg, folder.make)
     router('Delete Folder 🗑', msg, folder.remove)
 
-    router('/add', msg, word.add)
+    router('/word', msg, word.add)
     router('Delete Word 🗑', msg, word.remove)
     router('Open Word', msg, word.open)
 })

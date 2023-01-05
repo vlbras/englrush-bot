@@ -2,6 +2,7 @@ const TelegramApi = require('node-telegram-bot-api')
 const bot = new TelegramApi(process.env.TOKEN)
 
 const { Folder, Word } = require('../models/models')
+const { wordCommand, folderCommand } = require('../options/mainOptions')
 
 let array = []
 let obj = {}
@@ -80,7 +81,7 @@ module.exports = wordOptions = async (chatId, option) => {
             })
             return array = []
         }
-        return bot.sendMessage(chatId, `❗️No word added.\n<code>/add</code> word, word, ... - to add words`, { parse_mode: "HTML" })
+        return bot.sendMessage(chatId, `❗️No word added.\n${wordCommand}`, { parse_mode: "HTML" })
     }
-    return bot.sendMessage(chatId, `❗️No folder created.\n<code>/mkfolder</code> Name - to make a folder`, { parse_mode: "HTML" })
+    return bot.sendMessage(chatId, `❗️No folder created.\n${folderCommand}`, { parse_mode: "HTML" })
 }
