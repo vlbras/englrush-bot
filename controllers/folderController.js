@@ -8,12 +8,15 @@ class FolderController {
 
     async make(chatId, name) {
         if (name) {
-            if (!await Folder.findOne({ name, chatId })) {
-                const folder = new Folder({ name, chatId })
-                await folder.save()
-                return bot.sendMessage(chatId, `✅ 🗂 ${name} created`)
+            if(/^[a-zA-Z0-9]+$/.test(name)){
+                if (!await Folder.findOne({ name, chatId })) {
+                    const folder = new Folder({ name, chatId })
+                    await folder.save()
+                    return bot.sendMessage(chatId, `✅ 🗂 ${name} created`)
+                }
+                return bot.sendMessage(chatId, `❗️🗂 ${name} already created`)
             }
-            return bot.sendMessage(chatId, `❗️🗂 ${name} already created`)
+            return bot.sendMessage(chatId, `❗️ You must only use letters and numbers in 🗂 name`)
         }
         return bot.sendMessage(chatId, `❗️Name is ${name}`)
     }
