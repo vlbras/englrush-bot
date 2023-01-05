@@ -19,8 +19,6 @@ mongoose
 
 const bot = new TelegramApi(process.env.TOKEN, { polling: true })
 
-bot.deleteWebHook()
-
 bot.on('message', msg => {
 
     router('/start', msg, main.start)
@@ -35,7 +33,7 @@ bot.on('message', msg => {
 })
 
 bot.on('callback_query', msg => {
-    // bot.answerCallbackQuery(msg.id)
+    bot.answerCallbackQuery(msg.id)
     router('add', msg, word.add)
     router('openword', msg, word.open)
     router('rmfolder', msg, folder.remove)
