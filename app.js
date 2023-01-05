@@ -9,7 +9,7 @@ const folder = require('./controllers/folderController')
 const word = require('./controllers/wordController')
 
 const app = express()
-app.get('/', (req, res) => res.send('Hello World')).listen(3000)
+app.get('/', (req, res) => res.send('Hello World')).listen(8000)
 
 mongoose
     .set('strictQuery', false) // WTF
