@@ -1,14 +1,18 @@
 const TelegramApi = require('node-telegram-bot-api')
 const mongoose = require('mongoose')
+const express = require('express')
 require('dotenv').config()
 
 const router = require('./routers/router')
-
 const main = require('./controllers/mainController')
 const folder = require('./controllers/folderController')
 const word = require('./controllers/wordController')
 
 const bot = new TelegramApi(process.env.TOKEN, { polling: true })
+const app = express()
+
+app.get('/', (req, res) => res.send('Hello World')).listen(3000)
+    
 
 mongoose
     .set('strictQuery', false) // WTF
