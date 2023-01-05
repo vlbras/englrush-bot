@@ -9,7 +9,7 @@ const folder = require('./controllers/folderController')
 const word = require('./controllers/wordController')
 
 const app = express()
-app.get('/', (req, res) => res.send('Hello World')).listen(8000)
+app.get('/', (req, res) => res.send('Hello World')).listen(process.env.PORT || 8000)
 
 mongoose
     .set('strictQuery', false) // WTF
@@ -18,6 +18,8 @@ mongoose
     .catch(err => console.log('Failed to connect to MongoDB\n', err))
 
 const bot = new TelegramApi(process.env.TOKEN, { polling: true })
+
+bot.deleteWebHook()
 
 bot.on('message', msg => {
 
