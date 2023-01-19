@@ -19,6 +19,7 @@
     "node-telegram-bot-api": "^0.60.0",
     "nodemon": "^2.0.20",
     "puppeteer": "^19.4.1",
+    "reverso-api": "^2.22.3",
     "selenium-webdriver": "^4.7.1"
   }
 }

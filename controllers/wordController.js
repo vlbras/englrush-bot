@@ -5,7 +5,7 @@ const { Word } = require('../models/models')
 const folderOptions = require('../options/folderOptions')
 const wordOptions = require('../options/wordOptions')
 
-const wordParse = require('./wordParser')
+const wordParser = require('./wordParser')
 
 class WordController {
 
@@ -14,11 +14,12 @@ class WordController {
             if (await validator(name)) {
                 if (!await Word.findOne({ name, chatId })) {
                     if (_id) {
-                        let { ru, description, transcription, audio } = await wordParse(name)
-                        const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
-                        await word.save()
-                        await bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
-                        return bot.sendAudio(chatId, audio)
+                        let { en, ru, context } = await wordParser(name)
+                        await bot.sendMessage(chatId, `${en} - ${ru}\n\n💬 Sentenses:\n\n${context[0].en}\n<i>${context[0].ru}</i>\n\n${context[1].en}\n<i>${context[1].ru}</i>\n\n${context[2].en}\n<i>${context[2].ru}</i>`, { parse_mode: "HTML" })
+                        // const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
+                        // await word.save()
+                        // await bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
+                        // return bot.sendAudio(chatId, audio)
                     }
                     let option = 'add ' + name + " &&"
                     return folderOptions(chatId, option, `Select Folder:`)

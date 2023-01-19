@@ -1,20 +1,19 @@
-const axios = require('axios')
-const cheerio = require('cheerio')
+const Reverso = require('reverso-api')
+const reverso = new Reverso()
 
-module.exports = start = async (word) => {
-    const url = `https://englishlib.org/dictionary/en-ru/${word}.html`
-    const data = {}
-    await axios.get(url)
-        .then(res => {
-            const page = res.data
-            const $ = cheerio.load(page)
-            data.ru = $('#block_tr > div > i').text()
-            data.transcription = $('#us_tr_sound > span.transcription > big').text()
-            data.audio = $('#audio_us > source').attr('src')
-            $('#content-tab6 > b').remove()
-            data.description = $('#content-tab6:first').text()
-            data.description = data.description.substring(12, data.description.length - 6)
-            console.log(data)
+module.exports = translate = async word => {
+    let response = await reverso.getTranslation(word, 'english', 'russian', (err, response) => {
+        if (err) throw new Error(err.message)
+    })
+    let data = {}
+    data.en = word.toLowerCase()
+    data.ru = response.translations[0]
+    data.context = []
+    for (let i = 0; i < 3; i++) {
+        data.context.push({
+            en: response.context.examples[i].source,
+            ru: response.context.examples[i].target
         })
+    }
     return data
 }
