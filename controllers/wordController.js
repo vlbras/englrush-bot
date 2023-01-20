@@ -15,11 +15,11 @@ class WordController {
                 if (!await Word.findOne({ name, chatId })) {
                     if (_id) {
                         let { en, ru, context } = await wordParser(name)
-                        await bot.sendMessage(chatId, `${en} - ${ru}\n\n💬 Sentenses:\n\n${context[0].en}\n<i>${context[0].ru}</i>\n\n${context[1].en}\n<i>${context[1].ru}</i>\n\n${context[2].en}\n<i>${context[2].ru}</i>`, { parse_mode: "HTML" })
+                        await bot.sendMessage(chatId, `${en} - ${ru}\n\n💬 ${context[0].en}\n<i>❕${context[0].ru}</i>\n\n💬 ${context[1].en}\n<i>❕${context[1].ru}</i>\n\n💬 ${context[2].en}\n<i>❕${context[2].ru}</i>`, { parse_mode: "HTML" })
                         // const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
                         // await word.save()
                         // await bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
-                        // return bot.sendAudio(chatId, audio)
+                        return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/us/${en}.mp3`)
                     }
                     let option = 'add ' + name + " &&"
                     return folderOptions(chatId, option, `Select Folder:`)
