@@ -27,7 +27,7 @@ bot.on('message', msg => {
     router('/folder', msg, folder.make)
     router('Delete Folder 🗑', msg, folder.remove)
 
-    router('/word', msg, word.add)
+    router('/add', msg, word.add)
     router('Delete Word 🗑', msg, word.remove)
     router('Open Word', msg, word.open)
 })
