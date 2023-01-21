@@ -14,19 +14,22 @@ class WordController {
             if (await validator(name)) {
                 if (!await Word.findOne({ name, chatId })) {
                     if (_id) {
-                        let { en, ru, context } = await wordParser(name)
-                        await bot.sendMessage(chatId, `${en} - ${ru}\n\n💬 ${context[0].en}\n<i>❕${context[0].ru}</i>\n\n💬 ${context[1].en}\n<i>❕${context[1].ru}</i>\n\n💬 ${context[2].en}\n<i>❕${context[2].ru}</i>`, { parse_mode: "HTML" })
-                        // const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
-                        // await word.save()
-                        // await bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
-                        return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/us/${en}.mp3`)
+                        let { en, ru, context, correct } = await wordParser(name)
+                        if (ru) {
+                            await bot.sendMessage(chatId, `${en} - ${ru}\n\n💬 ${context[0].en}\n<i>❕${context[0].ru}</i>\n\n💬 ${context[1].en}\n<i>❕${context[1].ru}</i>\n\n💬 ${context[2].en}\n<i>❕${context[2].ru}</i>`, { parse_mode: "HTML" })
+                            // const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
+                            // await word.save()
+                            // await bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
+                            return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/us/${en}.mp3`)
+                        }
+                        return bot.sendMessage(chatId, `You meant '${correct}'?`)
                     }
                     let option = 'add ' + name + " &&"
                     return folderOptions(chatId, option, `Select Folder:`)
                 }
                 return bot.sendMessage(chatId, `❗️${name} already added`)
             }
-            return bot.sendMessage(chatId, `❗️ You must only use letters in word name`)
+            return bot.sendMessage(chatId, `❗️ You must use only English letters in the name of the word`)
         }
         return bot.sendMessage(chatId, `❗️Name is ${name}`)
     }
