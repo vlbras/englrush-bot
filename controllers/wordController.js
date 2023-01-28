@@ -1,3 +1,4 @@
+const https = require('https')
 const TelegramApi = require('node-telegram-bot-api')
 const bot = new TelegramApi(process.env.TOKEN)
 
@@ -15,9 +16,11 @@ class WordController {
                 if (!await Word.findOne({ name, chatId })) {
                     if (_id) {
                         let { en, ru, context, synonyms, correct } = await wordParser(name)
+                        console.log(context)
                         if (ru) {
+                            let contextStr = `${context[0].en}\n<i>❕${context[0].ru}</i>\n\n💬 ${context[1].en}\n<i>❕${context[1].ru}</i>\n\n💬 ${context[2].en}\n<i>❕${context[2].ru}</i>`
                             if (synonyms.length) {
-                                let synonymsStr =''
+                                let synonymsStr = ''
                                 for (let i = 0; i < 4; i++) {
                                     if (!synonyms[i]) {
                                         synonymsStr = synonymsStr.substring(0, synonymsStr.length - 3)
@@ -25,16 +28,27 @@ class WordController {
                                     }
                                     synonymsStr += synonyms[i] + ' - '
                                 }
-                                let contextStr = `${context[0].en}\n<i>❕${context[0].ru}</i>\n\n💬 ${context[1].en}\n<i>❕${context[1].ru}</i>\n\n💬 ${context[2].en}\n<i>❕${context[2].ru}</i>`
                                 await bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}\n\n💬 ${contextStr}`, { parse_mode: "HTML" })
                             }
                             else {
-                                await bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n💬 ${context[0].en}\n<i>❕${contextStr}</i>`, { parse_mode: "HTML" })
+                                await bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n💬 ${contextStr}`, { parse_mode: "HTML" })
                             }
+                            return https.get(`https://englishlib.org/dictionary/audio/us/${en}.mp3`, res => {
+                                console.log("USstatusCode = " + res.statusCode)
+                                if (res.statusCode == 200) {
+                                    return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/us/${en}.mp3`)
+                                }
+                                https.get(`https://englishlib.org/dictionary/audio/uk/${en}.mp3`, res => {
+                                    console.log("UKstatusCode = " + res.statusCode)
+                                    if (res.statusCode == 200) {
+                                        return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/uk/${en}.mp3`)
+                                    }
+                                })
+                            })
                             // const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
                             // await word.save()
                             // await bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
-                            return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/us/${en}.mp3`)
+
                         }
                         return bot.sendMessage(chatId, `You meant '${correct}'?`)
                     }
