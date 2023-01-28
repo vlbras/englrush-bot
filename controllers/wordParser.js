@@ -22,7 +22,17 @@ module.exports = translate = async word => {
                 ru: response.context.examples[i].target
             })
         }
+        let { synonyms } = await reverso.getSynonyms(word, 'english', (err, response) => {
+            if (err) throw new Error(err.message)
+        })
+        console.log(synonyms)
+        data.synonyms = []
+        for (let i = 0; i < 3; i++) {
+            if (!synonyms[i]) {
+                break
+            }
+            data.synonyms.push(synonyms[i].synonym)
+        }
     }
-
     return data
 }
