@@ -11,65 +11,61 @@ const wordParser = require('./wordParser')
 class WordController {
 
     async add(chatId, name, _id) {
-        if (name) {
-            if (await validator(name)) {
-                if (!await Word.findOne({ name, chatId })) {
-                    if (_id) {
-                        let { en, ru, context, synonyms, correct } = await wordParser(name)
-                        console.log(context)
-                        if (ru) {
-                            let contextStr = ''
-                            let synonymsStr = ''
-                            if (context.length) {
-                                for (let i = 0; i < 4; i++) {
-                                    if (!context[i]) {
-                                        break
-                                    }
-                                    contextStr += `\n\n💬 ${context[i].en}\n<i>❕${context[i].ru}</i>`
-                                }
-                            }
-                            if (synonyms.length) {
-                                
-                                for (let i = 0; i < 4; i++) {
-                                    if (!synonyms[i]) {
-                                        synonymsStr = synonymsStr.substring(0, synonymsStr.length - 3)
-                                        break
-                                    }
-                                    synonymsStr += synonyms[i] + ' - '
-                                }
-                                await bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
-                            }
-                            else {
-                                await bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}${contextStr}`, { parse_mode: "HTML" })
-                            }
-                            return https.get(`https://englishlib.org/dictionary/audio/us/${en}.mp3`, res => {
-                                console.log("USstatusCode = " + res.statusCode)
-                                if (res.statusCode === 200) {
-                                    return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/us/${en}.mp3`)
-                                }
-                                https.get(`https://englishlib.org/dictionary/audio/uk/${en}.mp3`, res => {
-                                    console.log("UKstatusCode = " + res.statusCode)
-                                    if (res.statusCode === 200) {
-                                        return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/uk/${en}.mp3`)
-                                    }
-                                })
-                                return bot.sendMessage(chatId, `😢 Sorry, I can't find audio`)
-                            })
-                            // const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
-                            // await word.save()
-                            // await bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
-
-                        }
-                        return bot.sendMessage(chatId, `You meant '${correct}'?`)
-                    }
-                    let option = 'add ' + name + " &&"
-                    return folderOptions(chatId, option, `Select Folder:`)
-                }
-                return bot.sendMessage(chatId, `❗️${name} already added`)
-            }
+        if (!name) {
+            return bot.sendMessage(chatId, `❗️Name is ${name}`)
+        }
+        if (!await validator(name)) {
             return bot.sendMessage(chatId, `❗️ You must use only English letters in the name of the word`)
         }
-        return bot.sendMessage(chatId, `❗️Name is ${name}`)
+        if (await Word.findOne({ name, chatId })) {
+            return bot.sendMessage(chatId, `❗️${name} already added`)
+        }
+        if (!_id) {
+            let option = 'add ' + name + " &&"
+            return folderOptions(chatId, option, `Select Folder:`)
+        }
+        let { en, ru, context, synonyms, correct } = await wordParser(name)
+        if (!ru) {
+            return bot.sendMessage(chatId, `You meant '${correct}'?`)
+        }
+        let contextStr = ``
+        let synonymsStr = ``
+        if (context.length) {
+            for (let i = 0; i < 4; i++) {
+                if (!context[i]) {
+                    
+                    break
+                }
+                contextStr += `💬 ${context[i].en}\n<i>❕${context[i].ru}</i>\n\n`
+            }
+        }
+        if (synonyms.length) {
+            for (let i = 0; i < 4; i++) {
+                if (!synonyms[i]) {
+                    synonymsStr = synonymsStr.substring(0, synonymsStr.length - 3)
+                    synonymsStr += `\n\n`
+                    break
+                }
+                synonymsStr += synonyms[i] + ` - `
+            }
+        }
+        await bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
+        return https.get(`https://englishlib.org/dictionary/audio/us/${en}.mp3`, res => {
+            console.log("USstatusCode = " + res.statusCode)
+            if (res.statusCode === 200) {
+                return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/us/${en}.mp3`)
+            }
+            https.get(`https://englishlib.org/dictionary/audio/uk/${en}.mp3`, res => {
+                console.log("UKstatusCode = " + res.statusCode)
+                if (res.statusCode === 200) {
+                    return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/uk/${en}.mp3`)
+                }
+            })
+            return bot.sendMessage(chatId, `😢 Sorry, I can't find audio`)
+        })
+        // const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
+        // await word.save()
+        // await bot.sendMessage(chatId, `${name} - ${ru}\n${description}\n\n${transcription}`)
     }
 
     async remove(chatId, _id) {
