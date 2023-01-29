@@ -18,9 +18,18 @@ class WordController {
                         let { en, ru, context, synonyms, correct } = await wordParser(name)
                         console.log(context)
                         if (ru) {
-                            let contextStr = `${context[0].en}\n<i>❕${context[0].ru}</i>\n\n💬 ${context[1].en}\n<i>❕${context[1].ru}</i>\n\n💬 ${context[2].en}\n<i>❕${context[2].ru}</i>`
+                            let contextStr = ''
+                            let synonymsStr = ''
+                            if (context.length) {
+                                for (let i = 0; i < 4; i++) {
+                                    if (!context[i]) {
+                                        break
+                                    }
+                                    contextStr += `\n\n💬 ${context[i].en}\n<i>❕${context[i].ru}</i>`
+                                }
+                            }
                             if (synonyms.length) {
-                                let synonymsStr = ''
+                                
                                 for (let i = 0; i < 4; i++) {
                                     if (!synonyms[i]) {
                                         synonymsStr = synonymsStr.substring(0, synonymsStr.length - 3)
@@ -28,22 +37,23 @@ class WordController {
                                     }
                                     synonymsStr += synonyms[i] + ' - '
                                 }
-                                await bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}\n\n💬 ${contextStr}`, { parse_mode: "HTML" })
+                                await bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
                             }
                             else {
-                                await bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n💬 ${contextStr}`, { parse_mode: "HTML" })
+                                await bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}${contextStr}`, { parse_mode: "HTML" })
                             }
                             return https.get(`https://englishlib.org/dictionary/audio/us/${en}.mp3`, res => {
                                 console.log("USstatusCode = " + res.statusCode)
-                                if (res.statusCode == 200) {
+                                if (res.statusCode === 200) {
                                     return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/us/${en}.mp3`)
                                 }
                                 https.get(`https://englishlib.org/dictionary/audio/uk/${en}.mp3`, res => {
                                     console.log("UKstatusCode = " + res.statusCode)
-                                    if (res.statusCode == 200) {
+                                    if (res.statusCode === 200) {
                                         return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/uk/${en}.mp3`)
                                     }
                                 })
+                                return bot.sendMessage(chatId, `😢 Sorry, I can't find audio`)
                             })
                             // const word = new Word({ name, ru, description, transcription, audio, folderId: _id, chatId })
                             // await word.save()

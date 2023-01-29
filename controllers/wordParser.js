@@ -17,8 +17,11 @@ module.exports = translate = async word => {
         data.en = await word.toLowerCase()
         data.ru = response.translations[0]
         data.context = []
-        console.log(response.context)
+        // console.log(response.context)
         for (let i = 0; i < 3; i++) {
+            if (!response.context.examples[i]) {
+                break
+            }
             data.context.push({
                 en: response.context.examples[i].source,
                 ru: response.context.examples[i].target
@@ -27,7 +30,7 @@ module.exports = translate = async word => {
         let { synonyms } = await reverso.getSynonyms(word, 'english', (err, response) => {
             if (err) throw new Error(err.message)
         })
-        console.log(synonyms)
+        // console.log(response.synonyms)
         data.synonyms = []
         for (let i = 0; i < 3; i++) {
             if (!synonyms[i]) {
