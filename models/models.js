@@ -13,7 +13,7 @@ const folderSchema = new Schema({
 })
 
 const wordSchema = new Schema({
-    name: {
+    en: {
         type: String,
         require: true
     },
@@ -21,12 +21,15 @@ const wordSchema = new Schema({
         type: String,
         require: true,
     },
-    description: {
-        type: String,
+    synonyms: {
+        type: [String],
         require: true,
     },
-    transcription: {
-        type: String,
+    context: {
+        type: [{
+            en: String,
+            ru: String
+        }],
         require: true,
     },
     audio: {
