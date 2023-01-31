@@ -8,34 +8,49 @@ const main = require('./controllers/mainController')
 const folder = require('./controllers/folderController')
 const word = require('./controllers/wordController')
 
-const app = express()
-app.get('/', (req, res) => res.send('Hello World')).listen(process.env.PORT || 8000)
+var cluster = require('cluster');
+if (cluster.isMaster) {
+    cluster.fork();
 
-mongoose
-    .set('strictQuery', false) // WTF
-    .connect(process.env.MongoURL)
-    .then(console.log("Connected to DB"))
-    .catch(err => console.log('Failed to connect to MongoDB\n', err))
+    cluster.on('exit', function (worker, code, signal) {
+        cluster.fork();
+        console.log('-----Gabella-----')
+    });
+}
 
-const bot = new TelegramApi(process.env.TOKEN, { polling: true })
+if (cluster.isWorker) {
 
-bot.on('message', msg => {
+    const app = express()
+    app.get('/', (req, res) => res.send('Hello World')).listen(process.env.PORT || 8000)
 
-    router('/start', msg, main.start)
-    router('Create Quiz ➕', msg, main.create)
+    mongoose
+        .set('strictQuery', false) // WTF
+        .connect(process.env.MongoURL)
+        .then(console.log("Connected to DB"))
+        .catch(err => console.log('Failed to connect to MongoDB\n', err))
 
-    router('/folder', msg, folder.make)
-    router('Delete Folder 🗑', msg, folder.remove)
+    const bot = new TelegramApi(process.env.TOKEN, { polling: true })
 
-    router('/add', msg, word.add)
-    router('Delete Word 🗑', msg, word.remove)
-    router('Open Word', msg, word.open)
-})
+    bot.on('message', msg => {
+        router('/start', msg, main.start)
+        router('Create Quiz ➕', msg, main.create)
 
-bot.on('callback_query', msg => {
-    bot.answerCallbackQuery(msg.id)
-    router('add', msg, word.add)
-    router('openword', msg, word.open)
-    router('rmfolder', msg, folder.remove)
-    router('rmword', msg, word.remove)
-})
+        router('/folder', msg, folder.make)
+        router('Delete Folder 🗑', msg, folder.remove)
+
+        router('/add', msg, word.add)
+        router('Delete Word 🗑', msg, word.remove)
+        router('Open Word', msg, word.open)
+    })
+
+    bot.on('callback_query', msg => {
+        bot.answerCallbackQuery(msg.id)
+
+        router('rmfolder', msg, folder.remove)
+
+        router('add', msg, word.add)
+        router('openword', msg, word.open)
+        router('rmword', msg, word.remove)
+    })
+}
+
