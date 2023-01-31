@@ -22,14 +22,17 @@ class FolderController {
     }
 
     async remove(chatId, _id) {
-        if (_id) {
+        if (!_id) {
+            let option = 'rmfolder'
+            return folderOptions(chatId, option, `Select Folder:\n❗️All Words in 🗂 will also be deleted`)
+        }
+        if(await Folder.findById(_id)){
             const folder = await Folder.findById(_id)
             await folder.delete()
             await Word.deleteMany({ folderId: _id })
             return bot.sendMessage(chatId, `✅ 🗂 ${folder.name} deleted`)
         }
-        let option = 'rmfolder'
-        return folderOptions(chatId, option, `Select Folder:\n❗️All Words in 🗂 will also be deleted`)
+        return
     }
 }
 
