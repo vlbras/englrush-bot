@@ -28,6 +28,17 @@ class WordController {
         if (!ru) {
             return bot.sendMessage(chatId, `You meant '${correct}'?`)
         }
+        for (let i = 0; i < context.length; i++) {
+            while (context[i].en.includes(en)) {
+                if (context[i].en.includes(' ' + en + ', ')) {
+                    context[i].en = await context[i].en.replace(en, '... ')
+                } else if (context[i].en.includes(' ' + en + '.')) {
+                    context[i].en = await context[i].en.replace(en, '... ')
+                } else if (context[i].en.includes(' ' + en + ' ')) {
+                    context[i].en = await context[i].en.replace(en, '...')
+                }
+            }
+        }
         let contextStr = ``
         let synonymsStr = ``
         if (context.length) {
@@ -49,6 +60,8 @@ class WordController {
             }
         }
 
+
+
         let audio
         https.get(`https://englishlib.org/dictionary/audio/us/${en}.mp3`, res => {
             console.log("USstatusCode = " + res.statusCode)
@@ -66,7 +79,7 @@ class WordController {
             return bot.sendMessage(chatId, `😢 Sorry, I can't find audio`)
         })
         const word = new Word({ en, ru, synonyms, context, audio, folderId: _id, chatId })
-        await word.save()
+        // await word.save()
         return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
     }
 
