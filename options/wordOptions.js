@@ -16,7 +16,7 @@ module.exports = wordOptions = async (chatId, option) => {
                 array[i] = []
                 for (let j = 0; j < words.length; j++) {
                     if (words[j].folderId == folders[i]._id) {
-                        obj.text = words[j].name
+                        obj.text = words[j].en
                         obj.callback_data = option + ' ' + words[j]._id
                         array[i][j] = obj
                     }
