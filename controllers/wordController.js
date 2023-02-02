@@ -49,7 +49,6 @@ class WordController {
         }
         // for textHandler
         let temp = await textHandler(en, context, synonyms)
-        context = temp.context
         let { contextStr, synonymsStr } = temp
         let audio
         // for augio getting
