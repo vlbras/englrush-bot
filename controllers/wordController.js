@@ -16,7 +16,7 @@ class WordController {
             return bot.sendMessage(chatId, `❗️Name is ${name}`)
         }
         // for validation name
-        if (!await validator(name)) {
+        if (!(/^[a-zA-Z]+$/).test(name)) {
             return bot.sendMessage(chatId, `❗️ You must use only English letters in the name of the word`)
         }
         // for not dublication words
@@ -103,10 +103,6 @@ class WordController {
         return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
         return bot.sendAudio(chatId, audio)
     }
-}
-
-let validator = async (word) => {
-    return /^[a-zA-Z]+$/.test(word)
 }
 
 let ucFirst = (str) => {
