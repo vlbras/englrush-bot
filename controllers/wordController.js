@@ -33,7 +33,21 @@ class WordController {
         if (!ru) {
             return bot.sendMessage(chatId, `You meant '${correct}'?`)
         }
-        // for textHendler
+        // for context handler
+        for (let i = 0; i < context.length; i++) {
+            for (let j = 0; j < 5; j++) {
+                if (await context[i].en.includes(' ' + en + ',')) {
+                    context[i].en = await context[i].en.replace(' ' + en + ',', ' ... ,')
+                }
+                else if (await context[i].en.includes(' ' + en + '.')) {
+                    context[i].en = await context[i].en.replace(' ' + en + '.', ' ... .')
+                }
+                else if (await context[i].en.includes(' ' + en + ' ')) {
+                    context[i].en = await context[i].en.replace(' ' + en + ' ', ' ...  ')
+                }
+            }
+        }
+        // for textHandler
         let temp = await textHandler(en, context, synonyms)
         context = temp.context
         let { contextStr, synonymsStr } = temp
@@ -85,7 +99,6 @@ class WordController {
         // for opening words
         let { en, ru, synonyms, context, audio } = await Word.findById(_id)
         let temp = await textHandler(en, context, synonyms)
-        context = temp.context
         let { contextStr, synonymsStr } = temp
         return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
         return bot.sendAudio(chatId, audio)
@@ -104,19 +117,6 @@ let textHandler = async (en, context, synonyms) => {
     let contextStr = ``
     let synonymsStr = ``
     // contextStr handler
-    for (let i = 0; i < context.length; i++) {
-        for (let j = 0; j < 4; j++) {
-            if (await context[i].en.includes(' ' + en + ',')) {
-                context[i].en = await context[i].en.replace(' ' + en + ',', ' ... ,')
-            }
-            else if (await context[i].en.includes(' ' + en + '.')) {
-                context[i].en = await context[i].en.replace(' ' + en + '.', ' ... .')
-            }
-            else if (await context[i].en.includes(' ' + en + ' ')) {
-                context[i].en = await context[i].en.replace(' ' + en + ' ', ' ...  ')
-            }
-        }
-    }
     if (context.length) {
         for (let i = 0; i < context.length; i++) {
             if (!context[i]) {
@@ -139,9 +139,7 @@ let textHandler = async (en, context, synonyms) => {
             synonymsStr += synonyms[i] + ` - `
         }
     }
-
     return {
-        context,
         contextStr,
         synonymsStr
     }
