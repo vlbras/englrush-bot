@@ -11,29 +11,34 @@ const wordParser = require('./wordParser')
 class WordController {
 
     async add(chatId, name, _id) {
+        // for name is undefined
         if (!name) {
             return bot.sendMessage(chatId, `❗️Name is ${name}`)
         }
+        // for validation name
         if (!await validator(name)) {
             return bot.sendMessage(chatId, `❗️ You must use only English letters in the name of the word`)
         }
+        // for not dublication words
         if (await Word.findOne({ en: name, chatId })) {
             return bot.sendMessage(chatId, `❗️${name} already added`)
         }
+        // for folderOptions
         if (!_id) {
             let option = 'add ' + name + " &&"
             return folderOptions(chatId, option, `Select Folder:`)
         }
+        // for check words
         let { en, ru, synonyms, context, correct } = await wordParser(name)
         if (!ru) {
             return bot.sendMessage(chatId, `You meant '${correct}'?`)
         }
-
-        let temp = await contSynonParser(en, context, synonyms)
+        // for textHendler
+        let temp = await textHandler(en, context, synonyms)
         context = temp.context
         let { contextStr, synonymsStr } = temp
         let audio
-
+        // for augio getting
         https.get(`https://englishlib.org/dictionary/audio/us/${en}.mp3`, res => {
             console.log("USstatusCode = " + res.statusCode)
             if (res.statusCode === 200) {
@@ -49,37 +54,41 @@ class WordController {
             })
             return bot.sendMessage(chatId, `😢 Sorry, I can't find audio`)
         })
+        // for saving words
         const word = new Word({ en, ru, synonyms, context, audio, folderId: _id, chatId })
         await word.save()
         return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
     }
 
     async remove(chatId, _id) {
-        if (_id) {
-            const word = await Word.findById(_id)
-            if (word) {
-                await word.delete()
-                return bot.sendMessage(chatId, `✅ ${word.en} deleted`)
-            }
+        // for wordOptions
+        if (!_id) {
+            let option = 'rmword'
+            return wordOptions(chatId, option)
+        }
+        // for removing folder
+        const word = await Word.findById(_id)
+        if (!word) {
             return bot.sendMessage(chatId, `❗️ You can't delete folder here`)
         }
-        let option = 'rmword'
-        return wordOptions(chatId, option)
+        // for removing words
+        await word.delete()
+        return bot.sendMessage(chatId, `✅ ${word.en} deleted`)
     }
 
     async open(chatId, _id) {
-        if (_id) {
-            const { en, ru, synonyms, context, audio } = await Word.findById(_id)
-
-            let temp = await contSynonParser(en, context, synonyms)
-            context = temp.context
-            let { contextStr, synonymsStr } = temp
-
-            return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
-            return bot.sendAudio(chatId, audio)
+        // for wordOptions
+        if (!_id) {
+            let option = 'openword'
+            return wordOptions(chatId, option)
         }
-        let option = 'openword'
-        return wordOptions(chatId, option)
+        // for opening words
+        let { en, ru, synonyms, context, audio } = await Word.findById(_id)
+        let temp = await textHandler(en, context, synonyms)
+        context = temp.context
+        let { contextStr, synonymsStr } = temp
+        return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
+        return bot.sendAudio(chatId, audio)
     }
 }
 
@@ -91,26 +100,23 @@ let ucFirst = (str) => {
     return str[0].toUpperCase() + str.slice(1);
 }
 
-let contSynonParser = async (en, context, synonyms) => {
-
+let textHandler = async (en, context, synonyms) => {
     let contextStr = ``
     let synonymsStr = ``
-
-    console.log(context)
+    // contextStr handler
     for (let i = 0; i < context.length; i++) {
         for (let j = 0; j < 4; j++) {
             if (await context[i].en.includes(' ' + en + ',')) {
-                context[i].en = await context[i].en.replace(' ' + en + ',', '... ,')
+                context[i].en = await context[i].en.replace(' ' + en + ',', ' ... ,')
             }
             else if (await context[i].en.includes(' ' + en + '.')) {
-                context[i].en = await context[i].en.replace(' ' + en + '.', '... .')
+                context[i].en = await context[i].en.replace(' ' + en + '.', ' ... .')
             }
             else if (await context[i].en.includes(' ' + en + ' ')) {
-                context[i].en = await context[i].en.replace(en, '...')
+                context[i].en = await context[i].en.replace(' ' + en + ' ', ' ...  ')
             }
         }
     }
-
     if (context.length) {
         for (let i = 0; i < context.length; i++) {
             if (!context[i]) {
@@ -119,6 +125,10 @@ let contSynonParser = async (en, context, synonyms) => {
             contextStr += `💬 ${context[i].en}\n<i>❕${context[i].ru}</i>\n\n`
         }
     }
+    while (contextStr.includes(`... `)) {
+        contextStr = contextStr.replace(`... `, `<b>` + en + `</b>`)
+    }
+    // synonymsStr handler
     if (synonyms.length) {
         for (let i = 0; context.length; i++) {
             if (!synonyms[i]) {
