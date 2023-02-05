@@ -16,7 +16,7 @@ class WordController {
             return bot.sendMessage(chatId, `❗️Name is ${name}`)
         }
         // for validation name
-        if (!(/^[a-zA-Z]+$/).test(name)) {
+        if (!(/^[a-zA-Z ]+$/).test(name)) {
             return bot.sendMessage(chatId, `❗️ You must use only English letters in the name of the word`)
         }
         // for not dublication words
