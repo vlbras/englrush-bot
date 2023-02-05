@@ -15,6 +15,7 @@
     "mongoose": "^6.8.2",
     "node-telegram-bot-api": "^0.60.0",
     "nodemon": "^2.0.20",
-    "reverso-api": "^2.22.3"
+    "reverso-api": "^2.22.3",
+    "translate": "^1.4.1"
   }
 }

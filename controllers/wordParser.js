@@ -1,7 +1,8 @@
+const translate = require('translate')
 const Reverso = require('reverso-api')
 const reverso = new Reverso()
 
-module.exports = translate = async word => {
+module.exports = wordParser = async word => {
     word = await word.toLowerCase()
     let data = {}
     let check = await reverso.getSpellCheck(word, 'english', (err, response) => {
@@ -11,20 +12,21 @@ module.exports = translate = async word => {
         data.correct = await check.text.toLowerCase()
     }
     else {
-        let response = await reverso.getTranslation(word, 'english', 'russian', (err, response) => {
+        let response = await reverso.getContext(word, 'english', 'russian', (err, response) => {
             if (err) throw new Error(err.message)
         })
+        console.log(response)
         data.en = await word.toLowerCase()
-        data.ru = response.translations[0]
+        data.ru = await translate(data.en, "ru");
         data.context = []
         // console.log(response.context)
         for (let i = 0; i < 3; i++) {
-            if (!response.context.examples[i]) {
+            if (!response.examples[i]) {
                 break
             }
             data.context.push({
-                en: response.context.examples[i].source,
-                ru: response.context.examples[i].target
+                en: response.examples[i].source,
+                ru: response.examples[i].target
             })
         }
         let { synonyms } = await reverso.getSynonyms(word, 'english', (err, response) => {
