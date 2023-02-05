@@ -7,6 +7,7 @@ const router = require('./routers/router')
 const main = require('./controllers/mainController')
 const folder = require('./controllers/folderController')
 const word = require('./controllers/wordController')
+const quiz = require('./controllers/quizController')
 
 var cluster = require('cluster');
 if (cluster.isMaster) {
@@ -41,16 +42,22 @@ if (cluster.isWorker) {
         router('/add', msg, word.add)
         router('Delete Word 🗑', msg, word.remove)
         router('Open Word', msg, word.open)
+
+        router('Start Quiz ▶', msg, quiz.start)
     })
 
     bot.on('callback_query', msg => {
         bot.answerCallbackQuery(msg.id)
 
         router('rmfolder', msg, folder.remove)
+        router('quiz', msg, folder.quiz)
 
         router('add', msg, word.add)
         router('openword', msg, word.open)
         router('rmword', msg, word.remove)
+
+        router('word', msg, quiz.word)
+        router('context', msg, quiz.context)
     })
 }
 
