@@ -15,7 +15,7 @@ module.exports = wordParser = async word => {
         let response = await reverso.getContext(word, 'english', 'russian', (err, response) => {
             if (err) throw new Error(err.message)
         })
-        console.log(response)
+        // console.log(response)
         data.en = await word.toLowerCase()
         data.ru = await translate(data.en, "ru");
         data.context = []

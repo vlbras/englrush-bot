@@ -8,6 +8,12 @@ const wordOptions = require('../options/wordOptions')
 
 const wordParser = require('./wordParser')
 
+var gtts = require('node-gtts')('en');
+var path = require('path');
+var fs = require('fs')
+
+process.env["NTBA_FIX_350"] = 1;
+
 class WordController {
 
     async add(chatId, name, _id) {
@@ -52,20 +58,12 @@ class WordController {
         let { contextStr, synonymsStr } = temp
         let audio
         // for augio getting
-        https.get(`https://englishlib.org/dictionary/audio/us/${en}.mp3`, res => {
-            console.log("USstatusCode = " + res.statusCode)
-            if (res.statusCode === 200) {
-                audio = `https://englishlib.org/dictionary/audio/us/${en}.mp3`
-                return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/us/${en}.mp3`)
-            }
-            https.get(`https://englishlib.org/dictionary/audio/uk/${en}.mp3`, res => {
-                console.log("UKstatusCode = " + res.statusCode)
-                if (res.statusCode === 200) {
-                    audio = `https://englishlib.org/dictionary/audio/uk/${en}.mp3`
-                    return bot.sendAudio(chatId, `https://englishlib.org/dictionary/audio/uk/${en}.mp3`)
-                }
+        let filepath = path.join(__dirname, `${en}.mp3`);
+        gtts.save(filepath, en, async () => {
+            await bot.sendAudio(chatId, __dirname + `/${en}.mp3`)
+            fs.unlink(__dirname + `/${en}.mp3`, (err, res) => {
+                if(err) console.log(err)
             })
-            return bot.sendMessage(chatId, `😢 Sorry, I can't find audio`)
         })
         // for saving words
         const word = new Word({ en, ru, synonyms, context, audio, folderId: _id, chatId })
