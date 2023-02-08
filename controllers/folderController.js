@@ -34,10 +34,6 @@ class FolderController {
         }
         return
     }
-
-    async quiz(chatId, option) {
-        folderOptions(chatId, option, `Select Folder:`)
-    }
 }
 
 module.exports = new FolderController()

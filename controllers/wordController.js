@@ -1,8 +1,9 @@
 const TelegramApi = require('node-telegram-bot-api')
 const bot = new TelegramApi(process.env.TOKEN)
 
-const { Word } = require('../models/models')
+const { Word, Topic, Folder } = require('../models/models')
 const folderOptions = require('../options/folderOptions')
+const topicOptions = require('../options/topicOptions')
 const wordOptions = require('../options/wordOptions')
 
 const wordParser = require('./wordParser')
@@ -20,13 +21,15 @@ class WordController {
     async add(chatId, name, _id) {
 
         if (!name) return bot.sendMessage(chatId, `❗️Name is ${name}`)
-        if (!(/^[a-zA-Z]+$/).test(name)) return bot.sendMessage(chatId, `❗️ You must use only English letters in the name of the word`)
+        if (!(/^[a-zA-Z]+$/).test(name)) return bot.sendMessage(chatId, `❗️You must use only English letters in the name of the word`)
         if (await Word.findOne({ en: name, chatId })) return bot.sendMessage(chatId, `❗️${name} already added`)
 
         if (!_id) {
             let option = 'addword ' + name + " &&"
-            return folderOptions(chatId, option, `Select Folder:`)
+            return topicOptions(chatId, option)
         }
+
+        if (!await Topic.findById(_id)) return bot.sendMessage(chatId, `❗️You must select a Topic, not a 🗂`)
 
         return dictionary(async (err, dict) => {
             // Nspell cheking
@@ -44,13 +47,13 @@ class WordController {
             for (let i = 0; i < context.length; i++) {
                 for (let j = 0; j < 5; j++) {
                     if (await context[i].en.includes(' ' + en + ',')) {
-                        context[i].en = await context[i].en.replace(' ' + en + ',', ' ... ,')
+                        context[i].en = await context[i].en.replace(' ' + en + ',', ' __ ,')
                     }
                     else if (await context[i].en.includes(' ' + en + '.')) {
-                        context[i].en = await context[i].en.replace(' ' + en + '.', ' ... .')
+                        context[i].en = await context[i].en.replace(' ' + en + '.', ' __ .')
                     }
                     else if (await context[i].en.includes(' ' + en + ' ')) {
-                        context[i].en = await context[i].en.replace(' ' + en + ' ', ' ...  ')
+                        context[i].en = await context[i].en.replace(' ' + en + ' ', ' __  ')
                     }
                 }
             }
@@ -67,25 +70,21 @@ class WordController {
                 })
             })
             // for saving words
-            const word = new Word({ en, ru, synonyms, context, audio, folderId: _id, chatId })
+            const word = new Word({ en, ru, synonyms, context, audio, topicId: _id, chatId })
             await word.save()
             return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
         })
     }
 
     async remove(chatId, _id) {
-        // for wordOptions
-        if (!_id) {
-            let option = 'rmword'
-            return wordOptions(chatId, option)
-        }
-        // for removing folder
+
+        if (!_id) return folderOptions(chatId,'rmword' )
+
+        if (await Folder.findById(_id)) return wordOptions(chatId, 'rmword')
+
         const word = await Word.findById(_id)
-        if (!word) {
-            word = await Word.findOne({ en: _id.toLowerCase() })
-            if (!word) return bot.sendMessage(chatId, `❗️I can't fint this word`)
-        }
-        // for removing words
+        if (!word)  return bot.sendMessage(chatId, `❗️You can't delete �  here`)
+
         await word.delete()
         return bot.sendMessage(chatId, `✅ ${word.en} deleted`)
     }
@@ -120,8 +119,8 @@ let textHandler = async (en, context, synonyms) => {
             contextStr += `💬 ${context[i].en}\n<i>❕${context[i].ru}</i>\n\n`
         }
     }
-    while (contextStr.includes(`... `)) {
-        contextStr = contextStr.replace(`... `, `<b>` + en + `</b>`)
+    while (contextStr.includes(`__ `)) {
+        contextStr = contextStr.replace(`__ `, `<b>` + en + `</b>`)
     }
     // synonymsStr handler
     if (synonyms.length) {

@@ -10,8 +10,8 @@ class TopicController {
     async make(chatId, name, _id) {
 
         if (!name) return bot.sendMessage(chatId, `❗️Name is ${name}`)
-        if (!(/^[a-zA-Z0-9 -]+$/.test(name))) return bot.sendMessage(chatId, `❗️ You must only use letters and numbers in 📔 name`)
-        if (await Topic.findOne({ name, chatId })) return bot.sendMessage(chatId, `❗️📔 ${name} already created`)
+        if (!(/^[a-zA-Z0-9 -]+$/.test(name))) return bot.sendMessage(chatId, `❗️ You must only use letters and numbers in 📒 name`)
+        if (await Topic.findOne({ name, chatId })) return bot.sendMessage(chatId, `❗️📒  ${name} already created`)
 
         if (!_id) {
             let option = 'mktopic ' + name + " &&"
@@ -20,7 +20,7 @@ class TopicController {
 
         const topic = new Topic({ name, folderId: _id, chatId })
         await topic.save()
-        return bot.sendMessage(chatId, `✅ 📔 ${name} created`)
+        return bot.sendMessage(chatId, `✅ � ${name} created`)
     }
 
     async remove(chatId, _id) {

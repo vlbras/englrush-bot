@@ -45,6 +45,7 @@ if (cluster.isWorker) {
         router('/w', msg, word.add)
         router('Delete Word 🗑', msg, word.remove)
         router('Open Word', msg, word.open)
+        router('/rw', msg, word.remove)
 
         router('Start Quiz ▶', msg, quiz.start)
     })
@@ -61,7 +62,6 @@ if (cluster.isWorker) {
         router('addword', msg, word.add)
         router('openword', msg, word.open)
         router('rmword', msg, word.remove)
-        router('/rw', msg, word.remove)
 
         router('word', msg, quiz.word)
         router('context', msg, quiz.context)
