@@ -12,6 +12,21 @@ const folderSchema = new Schema({
     }
 })
 
+const topicSchema = new Schema({
+    name: {
+        type: String,
+        require: true
+    },
+    folderId: {
+        type: String,
+        require: true
+    },
+    chatId: {
+        type: String,
+        require: true,
+    }
+})
+
 const wordSchema = new Schema({
     en: {
         type: String,
@@ -32,11 +47,7 @@ const wordSchema = new Schema({
         }],
         require: true,
     },
-    audio: {
-        type: String,
-        require: true,
-    },
-    folderId: {
+    topicId: {
         type: String,
         require: true
     },
@@ -47,9 +58,11 @@ const wordSchema = new Schema({
 })
 
 const Folder = mongoose.model('Folder', folderSchema)
+const Topic = mongoose.model('Topic', topicSchema)
 const Word = mongoose.model('Word', wordSchema)
 
 module.exports = {
     Folder,
+    Topic,
     Word
 }

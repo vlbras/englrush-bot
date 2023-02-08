@@ -8,7 +8,7 @@ class FolderController {
 
     async make(chatId, name) {
         if (name) {
-            if(/^[a-zA-Z0-9 -]+$/.test(name)){
+            if (/^[a-zA-Z0-9 -]+$/.test(name)) {
                 if (!await Folder.findOne({ name, chatId })) {
                     const folder = new Folder({ name, chatId })
                     await folder.save()
@@ -24,9 +24,9 @@ class FolderController {
     async remove(chatId, _id) {
         if (!_id) {
             let option = 'rmfolder'
-            return folderOptions(chatId, option, `Select Folder:\n❗️All Words in 🗂 will also be deleted`)
+            return folderOptions(chatId, option)
         }
-        if(await Folder.findById(_id)){
+        if (await Folder.findById(_id)) {
             const folder = await Folder.findById(_id)
             await folder.delete()
             await Word.deleteMany({ folderId: _id })
@@ -35,7 +35,7 @@ class FolderController {
         return
     }
 
-    async quiz (chatId, option){
+    async quiz(chatId, option) {
         folderOptions(chatId, option, `Select Folder:`)
     }
 }

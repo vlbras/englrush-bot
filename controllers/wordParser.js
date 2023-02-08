@@ -5,7 +5,7 @@ const reverso = new Reverso()
 module.exports = wordParser = async word => {
     word = await word.toLowerCase()
     let data = {}
-    let response = await reverso.getContext(word, 'english', 'russian', (err, response) => {
+    let response = await reverso.getContext(word, 'english', 'russian', (err) => {
         if (err) throw new Error(err.message)
     })
     // console.log(response)

@@ -6,14 +6,14 @@ require('dotenv').config()
 const router = require('./routers/router')
 const main = require('./controllers/mainController')
 const folder = require('./controllers/folderController')
+const topic = require('./controllers/topicController')
 const word = require('./controllers/wordController')
 const quiz = require('./controllers/quizController')
 
 var cluster = require('cluster');
 if (cluster.isMaster) {
     cluster.fork();
-
-    cluster.on('exit', function (worker, code, signal) {
+    cluster.on('exit', function () {
         cluster.fork();
         console.log('-----Gabella-----')
     });
@@ -36,10 +36,13 @@ if (cluster.isWorker) {
         router('/start', msg, main.start)
         router('Create Quiz ➕', msg, main.create)
 
-        router('/folder', msg, folder.make)
+        router('/f', msg, folder.make)
         router('Delete Folder 🗑', msg, folder.remove)
 
-        router('/add', msg, word.add)
+        router('/t', msg, topic.make)
+        router('Delete Topic 🗑', msg, topic.remove)
+
+        router('/w', msg, word.add)
         router('Delete Word 🗑', msg, word.remove)
         router('Open Word', msg, word.open)
 
@@ -52,9 +55,13 @@ if (cluster.isWorker) {
         router('rmfolder', msg, folder.remove)
         router('quiz', msg, folder.quiz)
 
-        router('add', msg, word.add)
+        router('mktopic', msg, topic.make)
+        router('rmtopic', msg, topic.remove)
+
+        router('addword', msg, word.add)
         router('openword', msg, word.open)
         router('rmword', msg, word.remove)
+        router('/rw', msg, word.remove)
 
         router('word', msg, quiz.word)
         router('context', msg, quiz.context)

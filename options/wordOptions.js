@@ -74,7 +74,7 @@ module.exports = wordOptions = async (chatId, option) => {
                     }
                 }
             }
-            await bot.sendMessage(chatId, `Select Quiz:`, {
+            await bot.sendMessage(chatId, `Select Word:`, {
                 reply_markup: JSON.stringify({
                     inline_keyboard: wordsKeyboard
                 })

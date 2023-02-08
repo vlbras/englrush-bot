@@ -18,24 +18,16 @@ process.env["NTBA_FIX_350"] = 1; //WTF
 class WordController {
 
     async add(chatId, name, _id) {
-        // for name is undefined
-        if (!name) {
-            return bot.sendMessage(chatId, `❗️Name is ${name}`)
-        }
-        // for validation name
-        if (!(/^[a-zA-Z]+$/).test(name)) {
-            return bot.sendMessage(chatId, `❗️ You must use only English letters in the name of the word`)
-        }
-        // for not dublication words
-        if (await Word.findOne({ en: name, chatId })) {
-            return bot.sendMessage(chatId, `❗️${name} already added`)
-        }
-        // for folderOptions
+
+        if (!name) return bot.sendMessage(chatId, `❗️Name is ${name}`)
+        if (!(/^[a-zA-Z]+$/).test(name)) return bot.sendMessage(chatId, `❗️ You must use only English letters in the name of the word`)
+        if (await Word.findOne({ en: name, chatId })) return bot.sendMessage(chatId, `❗️${name} already added`)
+
         if (!_id) {
-            let option = 'add ' + name + " &&"
+            let option = 'addword ' + name + " &&"
             return folderOptions(chatId, option, `Select Folder:`)
         }
-        // for check words
+
         return dictionary(async (err, dict) => {
             // Nspell cheking
             if (err) throw err
@@ -69,7 +61,7 @@ class WordController {
             // for augio getting
             let filepath = path.join(__dirname, `${en}.mp3`);
             gtts.save(filepath, en, async () => {
-                await bot.sendAudio(chatId, __dirname + `/${en}.mp3`, {performer: `EnglRush`, title: en})
+                await bot.sendAudio(chatId, __dirname + `/${en}.mp3`, { performer: `EnglRush`, title: en })
                 fs.unlink(__dirname + `/${en}.mp3`, err => {
                     if (err) console.log(err)
                 })
@@ -82,27 +74,28 @@ class WordController {
     }
 
     async remove(chatId, _id) {
-            // for wordOptions
-            if(!_id) {
-                let option = 'rmword'
-                return wordOptions(chatId, option)
-            }
+        // for wordOptions
+        if (!_id) {
+            let option = 'rmword'
+            return wordOptions(chatId, option)
+        }
         // for removing folder
         const word = await Word.findById(_id)
-        if(!word) {
-                return bot.sendMessage(chatId, `❗️ You can't delete folder here`)
-            }
+        if (!word) {
+            word = await Word.findOne({ en: _id.toLowerCase() })
+            if (!word) return bot.sendMessage(chatId, `❗️I can't fint this word`)
+        }
         // for removing words
         await word.delete()
         return bot.sendMessage(chatId, `✅ ${word.en} deleted`)
-        }
+    }
 
     async open(chatId, _id) {
-            // for wordOptions
-            if(!_id) {
-                let option = 'openword'
-                return wordOptions(chatId, option)
-            }
+        // for wordOptions
+        if (!_id) {
+            let option = 'openword'
+            return wordOptions(chatId, option)
+        }
         // for opening words
         let { en, ru, synonyms, context, audio } = await Word.findById(_id)
         let temp = await textHandler(en, context, synonyms)
