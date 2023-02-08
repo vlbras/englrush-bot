@@ -83,7 +83,7 @@ class WordController {
         if (await Folder.findById(_id)) return wordOptions(chatId, 'rmword')
 
         const word = await Word.findById(_id)
-        if (!word)  return bot.sendMessage(chatId, `❗️You can't delete �  here`)
+        if (!word)  return bot.sendMessage(chatId, `❗️You can't delete 📒 here`)
 
         await word.delete()
         return bot.sendMessage(chatId, `✅ ${word.en} deleted`)

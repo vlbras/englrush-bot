@@ -20,7 +20,7 @@ class TopicController {
 
         const topic = new Topic({ name, folderId: _id, chatId })
         await topic.save()
-        return bot.sendMessage(chatId, `✅ � ${name} created`)
+        return bot.sendMessage(chatId, `✅ 📒 ${name} created`)
     }
 
     async remove(chatId, _id) {
