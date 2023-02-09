@@ -31,7 +31,7 @@ class TopicController {
         }
 
         const topic = await Topic.findById(_id)
-        if (!topic) bot.sendMessage(chatId, `❗️You can't delete 🗂 here`)
+        if (!topic) return bot.sendMessage(chatId, `❗️You can't delete 🗂 here`)
         
         await topic.delete()
         return bot.sendMessage(chatId, `✅ ${topic.name} deleted`)
