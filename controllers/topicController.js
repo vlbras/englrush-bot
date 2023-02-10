@@ -27,6 +27,7 @@ class TopicController {
 
         if (!_id) {
             let option = 'rmtopic'
+            await bot.sendMessage(chatId, `❗️All words from Topic will be deleted too`)
             return topicOptions(chatId, option)
         }
 
@@ -34,6 +35,7 @@ class TopicController {
         if (!topic) return bot.sendMessage(chatId, `❗️You can't delete 🗂 here`)
         
         await topic.delete()
+        await Word.deleteMany({ topicId: _id })
         return bot.sendMessage(chatId, `✅ ${topic.name} deleted`)
     }
 

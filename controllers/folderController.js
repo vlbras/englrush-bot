@@ -1,7 +1,7 @@
 const TelegramApi = require('node-telegram-bot-api')
 const bot = new TelegramApi(process.env.TOKEN)
 
-const { Folder, Word } = require('../models/models')
+const { Folder, Topic } = require('../models/models')
 const folderOptions = require('../options/folderOptions')
 
 class FolderController {
@@ -24,12 +24,13 @@ class FolderController {
     async remove(chatId, _id) {
         if (!_id) {
             let option = 'rmfolder'
+            await bot.sendMessage(chatId, `❗️All Topics from 🗂 will be deleted too`)
             return folderOptions(chatId, option)
         }
         if (await Folder.findById(_id)) {
             const folder = await Folder.findById(_id)
             await folder.delete()
-            await Word.deleteMany({ folderId: _id })
+            await Topic.deleteMany({ folderId: _id })
             return bot.sendMessage(chatId, `✅ 🗂 ${folder.name} deleted`)
         }
         return
