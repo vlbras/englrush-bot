@@ -36,7 +36,12 @@ class WordController {
             if (err) throw err
             let spell = nspell(dict)
             if (!spell.correct(name)) {
-                return bot.sendMessage(chatId, `You meant '${spell.suggest(name)}'?`)
+                console.log(spell.suggest(name))
+                if (!Array.isArray(spell.suggest(name))) return bot.sendMessage(chatId, `You meant '${spell.suggest(name)}'?`)
+                let arrayToText = ''
+                spell.suggest(name).forEach(e => arrayToText += e + ', ')
+                arrayToText = arrayToText.substring(0, arrayToText.length - 2)
+                return bot.sendMessage(chatId, `You meant ${arrayToText}?`)
             }
             // Word parser
             let { en, ru, synonyms, context, correct } = await wordParser(name)
@@ -78,12 +83,12 @@ class WordController {
 
     async remove(chatId, _id) {
 
-        if (!_id) return folderOptions(chatId,'rmword' )
+        if (!_id) return folderOptions(chatId, 'rmword')
 
         if (await Folder.findById(_id)) return wordOptions(chatId, 'rmword')
 
         const word = await Word.findById(_id)
-        if (!word)  return bot.sendMessage(chatId, `❗️You can't delete 📒 here`)
+        if (!word) return bot.sendMessage(chatId, `❗️You can't delete 📒 here`)
 
         await word.delete()
         return bot.sendMessage(chatId, `✅ ${word.en} deleted`)
