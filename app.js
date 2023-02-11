@@ -20,7 +20,6 @@ if (cluster.isMaster) {
 }
 
 if (cluster.isWorker) {
-
     const app = express()
     app.get('/', (req, res) => res.send('Hello World')).listen(process.env.PORT || 8000)
 
@@ -39,14 +38,14 @@ if (cluster.isWorker) {
 
         router('/f', msg, folder.make)
         router('/rf', msg, folder.rename)
-        router('Delete Folder 🗑', msg, folder.remove)
+        router('Delete 🗂', msg, folder.remove)
 
         router('/t', msg, topic.make)
         router('/rt', msg, topic.rename)
-        router('Delete Topic 🗑', msg, topic.remove)
+        router('Delete 📒', msg, topic.remove)
 
         router('/w', msg, word.add)
-        router('Delete Word 🗑', msg, word.remove)
+        router('Delete Word', msg, word.remove)
         router('Open Word', msg, word.open)
 
         router('Start Quiz ▶', msg, quiz.start)
@@ -57,7 +56,6 @@ if (cluster.isWorker) {
 
         router('rnfolder', msg, folder.rename)
         router('rmfolder', msg, folder.remove)
-        router('quiz', msg, folder.quiz)
 
         router('mktopic', msg, topic.make)
         router('rntopic', msg, topic.rename)
