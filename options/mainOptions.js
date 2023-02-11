@@ -1,9 +1,9 @@
 const mainOptions = {
     "reply_markup": {
         "keyboard": [
-            ["Start Quiz ▶", "Create Quiz ➕"],
-            ["Delete Topic 🗑", "Delete Folder 🗑"],
-            ["Delete Word 🗑","Open Word"]
+            ["Word Quiz ▶", "Context Quiz ▶"],
+            ["Create Quiz ➕", "Edit Quiz 📝","Open Word"],
+            ["Delete 🗂","Delete 📒", "Delete Word"]
         ], "resize_keyboard": true
     }
 }
