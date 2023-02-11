@@ -19,6 +19,19 @@ class TopicController {
         return bot.sendMessage(chatId, `✅ 📒 ${name} created`)
     }
 
+    async rename(chatId, newName, _id) {
+        if (!newName) return bot.sendMessage(chatId, `❗️Name is ${newName}`)
+        if (!(/^[a-zA-Z0-9 -]+$/.test(newName))) return bot.sendMessage(chatId, `❗️You must use only English letters and numbers in 📒 name`)
+        if (await Topic.findOne({ name: newName, chatId })) return bot.sendMessage(chatId, `❗️📒 ${newName} already created`)
+        if (!_id) return topicOptions(chatId, `rntopic ${newName} &&`)
+
+        const topic = await Topic.findById(_id)
+        if (!topic) return bot.sendMessage(chatId, `❗️You can't rename 🗂 here`)
+
+        await topic.updateOne({ name: newName })
+        return bot.sendMessage(chatId, `✅ 📒 ${topic.name} renamed to ${newName}`)
+    }
+
     async remove(chatId, _id) {
         if (!_id) {
             await bot.sendMessage(chatId, `❗️All words from Topic will be deleted too`)

@@ -42,6 +42,7 @@ if (cluster.isWorker) {
         router('Delete Folder 🗑', msg, folder.remove)
 
         router('/t', msg, topic.make)
+        router('/rt', msg, topic.rename)
         router('Delete Topic 🗑', msg, topic.remove)
 
         router('/w', msg, word.add)
@@ -59,6 +60,7 @@ if (cluster.isWorker) {
         router('quiz', msg, folder.quiz)
 
         router('mktopic', msg, topic.make)
+        router('rntopic', msg, topic.rename)
         router('rmtopic', msg, topic.remove)
 
         router('addword', msg, word.add)
