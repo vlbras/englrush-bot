@@ -54,6 +54,7 @@ if (cluster.isWorker) {
     bot.on('callback_query', msg => {
         bot.answerCallbackQuery(msg.id)
 
+        router('rnfolder', msg, folder.rename)
         router('rmfolder', msg, folder.remove)
         router('quiz', msg, folder.quiz)
 

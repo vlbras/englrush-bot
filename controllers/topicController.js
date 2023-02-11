@@ -9,7 +9,7 @@ class TopicController {
 
     async make(chatId, name, _id) {
         if (!name) return bot.sendMessage(chatId, `❗️Name is ${name}`)
-        if (!(/^[a-zA-Z0-9 -]+$/.test(name))) return bot.sendMessage(chatId, `❗️ You must only use letters and numbers in 📒 name`)
+        if (!(/^[a-zA-Z0-9 -]+$/.test(name))) return bot.sendMessage(chatId, `❗️You must use only English letters and numbers in 📒 name`)
         if (await Topic.findOne({ name, chatId })) return bot.sendMessage(chatId, `❗️📒  ${name} already created`)
 
         if (!_id) return folderOptions(chatId, 'mktopic ' + name + " &&", `Select Folder:`)

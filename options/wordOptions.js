@@ -8,7 +8,6 @@ let array = []
 let obj = {}
 
 module.exports = wordOptions = async (chatId, option) => {
-
     const topics = await Topic.find({ chatId })
     const words = await Word.find({ chatId })
 

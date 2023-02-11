@@ -8,7 +8,6 @@ let array = []
 let obj = {}
 
 module.exports = topicOptions = async (chatId, option) => {
-    
     const folders = await Folder.find({ chatId })
     const topics = await Topic.find({ chatId })
 

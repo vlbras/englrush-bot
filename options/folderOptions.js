@@ -7,10 +7,7 @@ const { folderCommand } = require('../options/mainOptions')
 let array = []
 let obj = {}
 
-
-
-let folderOptions = async (chatId, option) => {
-
+module.exports = folderOptions = async (chatId, option) => {
     const folders = await Folder.find({ chatId })
     if (!folders.length) return bot.sendMessage(chatId, `❗️No folder created.\n${folderCommand}`, { parse_mode: "HTML" })
 
@@ -20,7 +17,7 @@ let folderOptions = async (chatId, option) => {
         array.push(obj)
         obj = {}
     })
-    
+
     await bot.sendMessage(chatId, `Select Folder:`, {
         reply_markup: JSON.stringify({
             inline_keyboard: [
@@ -30,5 +27,3 @@ let folderOptions = async (chatId, option) => {
     })
     return array = []
 }
-
-module.exports = folderOptions

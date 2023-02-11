@@ -7,22 +7,24 @@ const folderOptions = require('../options/folderOptions')
 class FolderController {
 
     async make(chatId, name) {
-        if (name) {
-            if (/^[a-zA-Z0-9 -]+$/.test(name)) {
-                if (!await Folder.findOne({ name, chatId })) {
-                    const folder = new Folder({ name, chatId })
-                    await folder.save()
-                    return bot.sendMessage(chatId, `✅ 🗂 ${name} created`)
-                }
-                return bot.sendMessage(chatId, `❗️🗂 ${name} already created`)
-            }
-            return bot.sendMessage(chatId, `❗️ You must only use letters and numbers in 🗂 name`)
-        }
-        return bot.sendMessage(chatId, `❗️Name is ${name}`)
+        if (!name) return bot.sendMessage(chatId, `❗️Name is ${name}`)
+        if (!(/^[a-zA-Z0-9 -]+$/.test(name))) return bot.sendMessage(chatId, `❗️You must use only English letters and numbers in 🗂 name`)
+        if (await Folder.findOne({ name, chatId })) return bot.sendMessage(chatId, `❗️🗂 ${name} already created`)
+
+        const folder = new Folder({ name, chatId })
+        await folder.save()
+        return bot.sendMessage(chatId, `✅ 🗂 ${name} created`)
     }
 
-    async rename(chatId, name, _id){
-        if (!_id) return folderOptions(chatId, 'rnfolder')
+    async rename(chatId, newName, _id) {
+        if (!newName) return bot.sendMessage(chatId, `❗️Name is ${newName}`)
+        if (!(/^[a-zA-Z0-9 -]+$/.test(newName))) return bot.sendMessage(chatId, `❗️You must use only English letters and numbers in 🗂 name`)
+        if (await Folder.findOne({ name: newName, chatId })) return bot.sendMessage(chatId, `❗️🗂 ${newName} already created`)
+        if (!_id) return folderOptions(chatId, `rnfolder ${newName} &&`)
+
+        let folder = await Folder.findById(_id)
+        await folder.updateOne({ name: newName })
+        return bot.sendMessage(chatId, `✅ 🗂 ${folder.name} renamed to ${newName}`)
     }
 
     async remove(chatId, _id) {
