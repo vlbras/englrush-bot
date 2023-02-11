@@ -53,8 +53,11 @@ class WordController {
                     else if (await context[i].en.includes(' ' + en + '.')) {
                         context[i].en = await context[i].en.replace(' ' + en + '.', ' __ .')
                     }
+                    else if (await context[i].en.includes('(' + en + ')')) {
+                        context[i].en = await context[i].en.replace('(' + en + ')', '(__)')
+                    }
                     else if (await context[i].en.includes(' ' + en + ' ')) {
-                        context[i].en = await context[i].en.replace(' ' + en + ' ', ' __  ')
+                        context[i].en = await context[i].en.replace(' ' + en + ' ', ' __ ')
                     }
                 }
             }
@@ -115,8 +118,8 @@ let textHandler = async (en, context, synonyms) => {
             contextStr += `💬 ${context[i].en}\n<i>❕${context[i].ru}</i>\n\n`
         }
     }
-    while (contextStr.includes(`__ `)) {
-        contextStr = contextStr.replace(`__ `, `<b>` + en + `</b>`)
+    while (contextStr.includes(`__`)) {
+        contextStr = contextStr.replace(`__`, `<b>` + en + `</b>`)
     }
     // synonymsStr handler
     if (synonyms.length) {
