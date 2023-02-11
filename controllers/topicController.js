@@ -8,15 +8,11 @@ const topicOptions = require('../options/topicOptions')
 class TopicController {
 
     async make(chatId, name, _id) {
-
         if (!name) return bot.sendMessage(chatId, `❗️Name is ${name}`)
         if (!(/^[a-zA-Z0-9 -]+$/.test(name))) return bot.sendMessage(chatId, `❗️ You must only use letters and numbers in 📒 name`)
         if (await Topic.findOne({ name, chatId })) return bot.sendMessage(chatId, `❗️📒  ${name} already created`)
 
-        if (!_id) {
-            let option = 'mktopic ' + name + " &&"
-            return folderOptions(chatId, option, `Select Folder:`)
-        }
+        if (!_id) return folderOptions(chatId, 'mktopic ' + name + " &&", `Select Folder:`)
 
         const topic = new Topic({ name, folderId: _id, chatId })
         await topic.save()
@@ -24,16 +20,14 @@ class TopicController {
     }
 
     async remove(chatId, _id) {
-
         if (!_id) {
-            let option = 'rmtopic'
             await bot.sendMessage(chatId, `❗️All words from Topic will be deleted too`)
-            return topicOptions(chatId, option)
+            return topicOptions(chatId, 'rmtopic')
         }
 
         const topic = await Topic.findById(_id)
         if (!topic) return bot.sendMessage(chatId, `❗️You can't delete 🗂 here`)
-        
+
         await topic.delete()
         await Word.deleteMany({ topicId: _id })
         return bot.sendMessage(chatId, `✅ ${topic.name} deleted`)

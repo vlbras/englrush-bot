@@ -21,11 +21,14 @@ class FolderController {
         return bot.sendMessage(chatId, `❗️Name is ${name}`)
     }
 
+    async rename(chatId, name, _id){
+        if (!_id) return folderOptions(chatId, 'rnfolder')
+    }
+
     async remove(chatId, _id) {
         if (!_id) {
-            let option = 'rmfolder'
             await bot.sendMessage(chatId, `❗️All Topics from 🗂 will be deleted too`)
-            return folderOptions(chatId, option)
+            return folderOptions(chatId, 'rmfolder')
         }
         if (await Folder.findById(_id)) {
             const folder = await Folder.findById(_id)

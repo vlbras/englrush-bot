@@ -19,15 +19,11 @@ process.env["NTBA_FIX_350"] = 1; //WTF
 class WordController {
 
     async add(chatId, name, _id) {
-
         if (!name) return bot.sendMessage(chatId, `❗️Name is ${name}`)
         if (!(/^[a-zA-Z]+$/).test(name)) return bot.sendMessage(chatId, `❗️You must use only English letters in the name of the word`)
         if (await Word.findOne({ en: name, chatId })) return bot.sendMessage(chatId, `❗️${name} already added`)
 
-        if (!_id) {
-            let option = 'addword ' + name + " &&"
-            return topicOptions(chatId, option)
-        }
+        if (!_id) return topicOptions(chatId, 'addword ' + name + " &&")
 
         if (!await Topic.findById(_id)) return bot.sendMessage(chatId, `❗️You must select a Topic, not a 🗂`)
 
@@ -82,7 +78,6 @@ class WordController {
     }
 
     async remove(chatId, _id) {
-
         if (!_id) return folderOptions(chatId, 'rmword')
 
         if (await Folder.findById(_id)) return wordOptions(chatId, 'rmword')
@@ -95,13 +90,9 @@ class WordController {
     }
 
     async open(chatId, _id) {
-        // for wordOptions
-        if (!_id) {
-            let option = 'openword'
-            return wordOptions(chatId, option)
-        }
-        // for opening words
-        let { en, ru, synonyms, context, audio } = await Word.findById(_id)
+        if (!_id) return wordOptions(chatId, 'openword')
+        
+        let { en, ru, synonyms, context} = await Word.findById(_id)
         let temp = await textHandler(en, context, synonyms)
         let { contextStr, synonymsStr } = temp
         return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })

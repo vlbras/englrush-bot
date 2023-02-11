@@ -10,6 +10,9 @@ class MainController {
     async create(chatId) {
         return bot.sendMessage(chatId, `💬 Commands:\n${folderCommand}\n${topicCommand}\n${wordCommand}`, { parse_mode: "HTML" })
     }
+    async edit(chatId) {
+        return bot.sendMessage(chatId, `💬 Commands:\n<code>/rf</code> NewName - to rename a folder\n<code>/rt</code> NewName - to rename a topic`, { parse_mode: "HTML" })
+    }
 }
 
 const mainController = new MainController()

@@ -35,8 +35,10 @@ if (cluster.isWorker) {
     bot.on('message', msg => {
         router('/start', msg, main.start)
         router('Create Quiz ➕', msg, main.create)
+        router('Edit Quiz 📝', msg, main.edit)
 
         router('/f', msg, folder.make)
+        router('/rf', msg, folder.rename)
         router('Delete Folder 🗑', msg, folder.remove)
 
         router('/t', msg, topic.make)
@@ -45,7 +47,6 @@ if (cluster.isWorker) {
         router('/w', msg, word.add)
         router('Delete Word 🗑', msg, word.remove)
         router('Open Word', msg, word.open)
-        router('/rw', msg, word.remove)
 
         router('Start Quiz ▶', msg, quiz.start)
     })
