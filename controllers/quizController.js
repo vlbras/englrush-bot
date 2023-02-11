@@ -6,17 +6,18 @@ const topicOptions = require('../options/topicOptions')
 const { wordCommand } = require('../options/mainOptions')
 
 class QuizController {
-    async word(chatId, i, _id) {
+    async word(chatId, n, _id) {
         if (!_id) return topicOptions(chatId, `quizword 0 &&`)
 
         if (!await Topic.findById(_id)) return bot.sendMessage(chatId, `❗️Please select a topic`)
         let words = await Word.find({ topicId: _id })
         if (!words.length) return bot.sendMessage(chatId, `❗️No word added.\n${wordCommand}`, { parse_mode: "HTML" })
-        if(words.length < 5) return bot.sendMessage(chatId, `❗️Too few words. 5 is minimum`)
-        
-        i = Number(i)
-        let last = i + 4
-        for (i; i <= last; i++) {
+        if (words.length < 5) return bot.sendMessage(chatId, `❗️Too few words. 5 is minimum`)
+
+        n = Number(n)
+        let i = words.length - 1 - n
+        let last = i - 5
+        for (i; i > last; i--) {
             if (!words[i]) return;
             let answers = [words[i].ru]
             while (answers.length != 5) {
@@ -32,15 +33,15 @@ class QuizController {
         if (words[i]) {
             return bot.sendMessage(chatId, `Would you like to continue?`, {
                 reply_markup: JSON.stringify({
-                    inline_keyboard: [[{ text: 'Next', callback_data: `quizword ${i} && ${_id}` }]]
+                    inline_keyboard: [[{ text: 'Next', callback_data: `quizword ${words.length - 1 - i} && ${_id}` }]]
                 })
             })
         }
         return
     }
 
-    async context(chatId, _id) {
-        if (!_id) return topicOptions(chatId, `quizcontex`)
+    async context(chatId, i, _id) {
+
     }
 }
 
