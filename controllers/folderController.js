@@ -28,10 +28,8 @@ class FolderController {
     }
 
     async remove(chatId, _id) {
-        if (!_id) {
-            await bot.sendMessage(chatId, `❗️All Topics from 🗂 will be deleted too`)
-            return folderOptions(chatId, 'rmfolder')
-        }
+        if (!_id)return folderOptions(chatId, 'rmfolder')
+        
         if (await Folder.findById(_id)) {
             const folder = await Folder.findById(_id)
             await folder.delete()
