@@ -12,7 +12,8 @@ class QuizController {
         if (!await Topic.findById(_id)) return bot.sendMessage(chatId, `❗️Please select a topic`)
         let words = await Word.find({ topicId: _id })
         if (!words.length) return bot.sendMessage(chatId, `❗️No word added.\n${wordCommand}`, { parse_mode: "HTML" })
-
+        if(words.length < 5) return bot.sendMessage(chatId, `❗️Too few words. 5 is minimum`)
+        
         i = Number(i)
         let last = i + 4
         for (i; i <= last; i++) {
