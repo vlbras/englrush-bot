@@ -26,7 +26,7 @@ class TopicController {
         if (!_id) return topicOptions(chatId, `rntopic ${newName} &&`)
 
         const topic = await Topic.findById(_id)
-        if (!topic) return bot.sendMessage(chatId, `❗️You can't rename 🗂 here`)
+        if (!topic) return bot.sendMessage(chatId, `❗️You should select an existing Topic`)
 
         await topic.updateOne({ name: newName })
         return bot.sendMessage(chatId, `✅ 📒 ${topic.name} renamed to ${newName}`)
@@ -36,7 +36,7 @@ class TopicController {
         if (!_id) return topicOptions(chatId, 'rmtopic')
 
         const topic = await Topic.findById(_id)
-        if (!topic) return bot.sendMessage(chatId, `❗️You can't delete 🗂 here`)
+        if (!topic) return bot.sendMessage(chatId, `❗️You should select an existing Topic`)
 
         await topic.delete()
         await Word.deleteMany({ topicId: _id })

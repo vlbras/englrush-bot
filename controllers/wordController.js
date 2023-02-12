@@ -25,7 +25,7 @@ class WordController {
 
         if (!_id) return topicOptions(chatId, 'addword ' + name + " &&")
 
-        if (!await Topic.findById(_id)) return bot.sendMessage(chatId, `❗️You must select a Topic, not a 🗂`)
+        if (!await Topic.findById(_id)) return bot.sendMessage(chatId, `❗️You should select an existing Topic`)
 
         return dictionary(async (err, dict) => {
             // Nspell cheking
@@ -33,17 +33,15 @@ class WordController {
             let spell = nspell(dict)
             if (!spell.correct(name)) {
                 console.log(spell.suggest(name))
-                if (!Array.isArray(spell.suggest(name))) return bot.sendMessage(chatId, `You meant '${spell.suggest(name)}'?`)
+                if (!Array.isArray(spell.suggest(name))) return bot.sendMessage(chatId, `❗️You meant '${spell.suggest(name)}'?`)
                 let arrayToText = ''
                 spell.suggest(name).forEach(e => arrayToText += e + ', ')
                 arrayToText = arrayToText.substring(0, arrayToText.length - 2)
-                return bot.sendMessage(chatId, `You meant ${arrayToText}?`)
+                return bot.sendMessage(chatId, `❗️You meant ${arrayToText}?`)
             }
             // Word parser
             let { en, ru, context } = await wordParser(name)
-            if (!ru) {
-                return bot.sendMessage(chatId, `You meant '${correct}'?`)
-            } // if context
+            if (!context.length) return bot.sendMessage(chatId, `❗️I can't find context with this word`)
             // for context handler
             for (let i = 0; i < context.length; i++) {
                 for (let j = 0; j < 5; j++) {
@@ -85,7 +83,7 @@ class WordController {
         if (await Folder.findById(_id)) return wordOptions(chatId, 'rmword')
 
         const word = await Word.findById(_id)
-        if (!word) return bot.sendMessage(chatId, `❗️You can't delete 📒 here`)
+        if (!word) return bot.sendMessage(chatId, `❗️You should select an existing word`)
 
         await word.delete()
         return bot.sendMessage(chatId, `✅ ${word.en} deleted`)
@@ -93,9 +91,9 @@ class WordController {
 
     async open(chatId, _id) {
         if (!_id) return wordOptions(chatId, 'openword')
-        
-        let { en, ru, synonyms, context} = await Word.findById(_id)
-        let contextStr = await textHandler(en, context, synonyms)
+
+        let { en, ru, context } = await Word.findById(_id)
+        let contextStr = await textHandler(en, context)
         return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${contextStr}`, { parse_mode: "HTML" })
     }
 }
