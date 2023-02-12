@@ -40,10 +40,10 @@ class WordController {
                 return bot.sendMessage(chatId, `You meant ${arrayToText}?`)
             }
             // Word parser
-            let { en, ru, synonyms, context, correct } = await wordParser(name)
+            let { en, ru, context } = await wordParser(name)
             if (!ru) {
                 return bot.sendMessage(chatId, `You meant '${correct}'?`)
-            }
+            } // if context
             // for context handler
             for (let i = 0; i < context.length; i++) {
                 for (let j = 0; j < 5; j++) {
@@ -62,8 +62,7 @@ class WordController {
                 }
             }
             // for textHandler
-            let temp = await textHandler(en, context, synonyms)
-            let { contextStr, synonymsStr } = temp
+            let contextStr = await textHandler(en, context)
             let audio
             // for augio getting
             let filepath = path.join(__dirname, `${en}.mp3`);
@@ -74,9 +73,9 @@ class WordController {
                 })
             })
             // for saving words
-            const word = new Word({ en, ru, synonyms, context, audio, topicId: _id, chatId })
+            const word = new Word({ en, ru, context, audio, topicId: _id, chatId })
             await word.save()
-            return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
+            return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${contextStr}`, { parse_mode: "HTML" })
         })
     }
 
@@ -96,9 +95,8 @@ class WordController {
         if (!_id) return wordOptions(chatId, 'openword')
         
         let { en, ru, synonyms, context} = await Word.findById(_id)
-        let temp = await textHandler(en, context, synonyms)
-        let { contextStr, synonymsStr } = temp
-        return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${synonymsStr}${contextStr}`, { parse_mode: "HTML" })
+        let contextStr = await textHandler(en, context, synonyms)
+        return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${contextStr}`, { parse_mode: "HTML" })
     }
 }
 
@@ -106,36 +104,18 @@ let ucFirst = (str) => {
     return str[0].toUpperCase() + str.slice(1);
 }
 
-let textHandler = async (en, context, synonyms) => {
+let textHandler = async (en, context) => {
     let contextStr = ``
-    let synonymsStr = ``
-    // contextStr handler
     if (context.length) {
         for (let i = 0; i < context.length; i++) {
-            if (!context[i]) {
-                break
-            }
+            if (!context[i]) break
             contextStr += `💬 ${context[i].en}\n<i>❕${context[i].ru}</i>\n\n`
         }
     }
     while (contextStr.includes(`__`)) {
         contextStr = contextStr.replace(`__`, `<b>` + en + `</b>`)
     }
-    // synonymsStr handler
-    if (synonyms.length) {
-        for (let i = 0; context.length; i++) {
-            if (!synonyms[i]) {
-                synonymsStr = synonymsStr.substring(0, synonymsStr.length - 3)
-                synonymsStr += `\n\n`
-                break
-            }
-            synonymsStr += synonyms[i] + ` - `
-        }
-    }
-    return {
-        contextStr,
-        synonymsStr
-    }
+    return contextStr
 }
 
 module.exports = new WordController()
