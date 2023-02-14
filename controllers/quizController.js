@@ -45,8 +45,8 @@ class QuizController {
                 inline_keyboard:
                     [[{ text: `Context-Word ⬇️`, callback_data: ` ` }, { text: `Word-Context ⬇️`, callback_data: ` ` }],
                     [{ text: '1', callback_data: `${option} 0 context 0 && ${_id}` }, { text: '1', callback_data: `${option} 0 word 0 && ${_id}` }],
-                    [{ text: '2', callback_data: `${option} 0 context 1 && ${_id}` }, { text: '2', callback_data: `${option} 0 word 1 && ${_id}` }],
-                    [{ text: '3', callback_data: `${option} 0 context 2 && ${_id}` }, { text: '3', callback_data: `${option} 0 word 2 && ${_id}` }]]
+                    [{ text: '2', callback_data: `${option} 0 context 1 && ${_id}` }, { text: `2 (Doesn't work)`, callback_data: `-` }], // ${option} 0 word 1 && ${_id}
+                    [{ text: '3', callback_data: `${option} 0 context 2 && ${_id}` }, { text: `2 (Doesn't work)`, callback_data: `-` }]], // ${option} 0 word 2 && ${_id}
             })
         })
 
