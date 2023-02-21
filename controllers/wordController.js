@@ -80,7 +80,7 @@ class WordController {
     async remove(chatId, _id) {
         if (!_id) return folderOptions(chatId, 'rmword')
 
-        if (await Folder.findById(_id)) return wordOptions(chatId, 'rmword')
+        if (await Folder.findById(_id)) return wordOptions(chatId, 'rmword ' + _id)
 
         const word = await Word.findById(_id)
         if (!word) return bot.sendMessage(chatId, `❗️You should select an existing word`)
@@ -90,7 +90,9 @@ class WordController {
     }
 
     async open(chatId, _id) {
-        if (!_id) return wordOptions(chatId, 'openword')
+        if (!_id) return folderOptions(chatId, 'openword')
+
+        if (await Folder.findById(_id)) return wordOptions(chatId, 'openword ' + _id)
 
         let { en, ru, context } = await Word.findById(_id)
         let contextStr = await textHandler(en, context)

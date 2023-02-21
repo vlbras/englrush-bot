@@ -8,7 +8,9 @@ let array = []
 let obj = {}
 
 module.exports = wordOptions = async (chatId, option) => {
-    const topics = await Topic.find({ chatId })
+    const _id = await option.split(" ")[1]
+    option = await option.split(" ")[0]
+    const topics = await Topic.find({ chatId, folderId: _id })
     const words = await Word.find({ chatId })
 
     if (!topics.length) return bot.sendMessage(chatId, `❗️No topic created.\n${topicCommand}`, { parse_mode: "HTML" })
