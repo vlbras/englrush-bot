@@ -19,7 +19,6 @@
     "node-telegram-bot-api": "^0.60.0",
     "nodemon": "^2.0.20",
     "nspell": "^2.1.5",
-    "reverso-api": "^2.22.3",
     "translate": "^1.4.1"
   }
 }

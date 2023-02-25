@@ -36,17 +36,12 @@ const wordSchema = new Schema({
         type: String,
         require: true,
     },
-    synonyms: {
-        type: [String],
-        require: true,
+    description: {
+        type: String,
+        require: true
     },
-    context: {
-        type: [{
-            en: String,
-            ru: String
-        }],
-        require: true,
-    },
+    context: [String]
+    ,
     topicId: {
         type: String,
         require: true
