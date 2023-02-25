@@ -10,6 +10,8 @@ const topic = require('./controllers/topicController')
 const word = require('./controllers/wordController')
 const quiz = require('./controllers/quizController')
 
+const { Word } = require('./models/models')
+
 var cluster = require('cluster');
 if (cluster.isMaster) {
     cluster.fork();
@@ -21,7 +23,9 @@ if (cluster.isMaster) {
 
 if (cluster.isWorker) {
     const app = express()
-    app.get('/', (req, res) => res.send('Hello World')).listen(process.env.PORT || 8000)
+    app.get('/', (req, res) => res.send('Hello World')).listen(process.env.PORT || 8000, () => console.log(`http://localhost:8000`))
+    app.set('view engine', 'ejs')
+    app.use(express.urlencoded({ extended: true })) // true for Arrays
 
     mongoose
         .set('strictQuery', false) // WTF
@@ -33,6 +37,7 @@ if (cluster.isWorker) {
 
     bot.on('message', msg => {
         router('/start', msg, main.start)
+        router('/link', msg, main.link)
         router('Create Quiz ➕', msg, main.create)
         router('Edit Quiz 📝', msg, main.edit)
 
@@ -49,7 +54,7 @@ if (cluster.isWorker) {
         router('Open Word', msg, word.open)
 
         router('Word Quiz ▶', msg, quiz.word)
-        router('Context Quiz ▶', msg, quiz.context) 
+        router('Context Quiz ▶', msg, quiz.context)
     })
 
     bot.on('callback_query', msg => {
@@ -68,6 +73,18 @@ if (cluster.isWorker) {
 
         router('quizword', msg, quiz.word)
         router('quizcontext', msg, quiz.context)
+    })
+
+    app.get('/:chatId', (req, res) => {
+        const chatId = req.params.chatId
+        res.render('index', { chatId })
+    })
+
+    app.post('/:chatId', (req, res) => {
+        const chatId = req.params.chatId
+        const { description, context } = req.body
+        console.log(chatId, description, context)
+        res.send(`Success`)
     })
 }
 

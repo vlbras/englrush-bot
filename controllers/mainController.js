@@ -7,6 +7,9 @@ class MainController {
     async start(chatId) {
         return bot.sendSticker(chatId, "https://cdn.tlgrm.app/stickers/552/b31/552b31fc-5e93-4360-b2c2-9ee1e43a236e/192/5.webp", mainOptions)
     }
+    async link(chatId){
+        return bot.sendMessage(chatId, `<a href="https://englrush-bot-vlbras.koyeb.app/${chatId}">Link</a>`, { parse_mode: "HTML" })
+    }
     async create(chatId) {
         return bot.sendMessage(chatId, `💬 Commands:\n${folderCommand}\n${topicCommand}\n${wordCommand}`, { parse_mode: "HTML" })
     }
