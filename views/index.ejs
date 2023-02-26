@@ -10,11 +10,9 @@
     <div style="text-align: center; margin-top: 50px;">
         <form method="post">
             <h2>Description</h2>
-            <input required type="text" name="description" placeholder="Description">
+            <textarea required style="font-family: Arial, Helvetica, sans-serif;" name="description" placeholder="Description" cols="30" rows="5"></textarea><br>
             <h2>Context</h2>
-            <input required type="text" name='context[]' placeholder="Sentence 1"><br><br>
-            <input required type="text" name='context[]' placeholder="Sentence 1"><br><br>
-            <input required type="text" name="context[]" placeholder="Sentence 1"><br><br>
+            <textarea required style="font-family: Arial, Helvetica, sans-serif;" name='context' placeholder="Context" cols="30" rows="10"></textarea><br><br>
             <input type="submit" value="Send">
         </form>
     </div>
