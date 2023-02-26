@@ -83,7 +83,8 @@ if (cluster.isWorker) {
     app.post('/:chatId', (req, res) => {
         const chatId = req.params.chatId
         const { description, context } = req.body
-        console.log(chatId, description, context)
+        word.link(chatId, description, context)
+        // console.log(chatId, description, context)
         res.send(`Success`)
     })
 }

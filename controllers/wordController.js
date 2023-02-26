@@ -43,26 +43,6 @@ class WordController {
             const data = {}
             data.en = name
             data.ru = await translate(name, "ru");
-            // for context handler
-            // for (let i = 0; i < context.length; i++) {
-            //     for (let j = 0; j < 5; j++) {
-            //         if (await context[i].en.includes(' ' + en + ',')) {
-            //             context[i].en = await context[i].en.replace(' ' + en + ',', ' __ ,')
-            //         }
-            //         else if (await context[i].en.includes(' ' + en + '.')) {
-            //             context[i].en = await context[i].en.replace(' ' + en + '.', ' __ .')
-            //         }
-            //         else if (await context[i].en.includes('(' + en + ')')) {
-            //             context[i].en = await context[i].en.replace('(' + en + ')', '(__)')
-            //         }
-            //         else if (await context[i].en.includes(' ' + en + ' ')) {
-            //             context[i].en = await context[i].en.replace(' ' + en + ' ', ' __ ')
-            //         }
-            //     }
-            // }
-            // for textHandler
-            // let contextStr = await textHandler(en, context)
-            // for augio getting
             let filepath = path.join(__dirname, `${data.en}.mp3`);
             gtts.save(filepath, data.en, async () => {
                 await bot.sendAudio(chatId, __dirname + `/${data.en}.mp3`, { performer: `EnglRush`, title: data.en })
@@ -75,6 +55,42 @@ class WordController {
             await word.save()
             return bot.sendMessage(chatId, `${ucFirst(data.en)} - ${data.ru}`) //\n\n${contextStr}`, { parse_mode: "HTML" }
         })
+    }
+
+    async link(chatId, description, sentences) {
+        let en = await description.split(' ')[1]
+        let word = await Word.findOne({en, chatId})
+        if(!word) return bot.sendMessage(chatId, `❗️'${en}' isn't added`)
+
+        while (sentences.includes('\r\n')) {
+            sentences = await sentences.replace('\r\n', ' ')
+            description = await description.replace('\r\n', ' ')
+        }
+        sentences = await sentences.split(' | ')
+        description = await description.replace(en, '__')
+        let context = []
+        await sentences.forEach(el => context.push(ucFirst(el) + '.'))
+        for (let i = 0; i < context.length; i++) {
+            for (let j = 0; j < 5; j++) {
+                if (await context[i].includes(' ' + en + ',')) {
+                    context[i] = await context[i].replace(' ' + en + ',', ' __ ,')
+                }
+                else if (await context[i].includes(' ' + en + '.')) {
+                    context[i] = await context[i].replace(' ' + en + '.', ' __ .')
+                }
+                else if (await context[i].includes(' ' + en + 's')) {
+                    context[i] = await context[i].replace(' ' + en, ' __')
+                }
+                else if (await context[i].includes(' ' + en + ' ')) {
+                    context[i] = await context[i].replace(' ' + en + ' ', ' __ ')
+                }
+            }
+        }
+        //saving
+        console.log(description, context)
+        let contextStr = await textHandler(en, context)
+        description = description.replace('__', `<b>${en}</b>`)
+        return bot.sendMessage(chatId, `${description}\n\n${contextStr}`, { parse_mode: "HTML" })
     }
 
     async remove(chatId, _id) {
@@ -109,7 +125,7 @@ let textHandler = async (en, context) => {
     if (context.length) {
         for (let i = 0; i < context.length; i++) {
             if (!context[i]) break
-            contextStr += `💬 ${context[i].en}\n<i>❕${context[i].ru}</i>\n\n`
+            contextStr += `${context[i]}\n`
         }
     }
     while (contextStr.includes(`__`)) {
