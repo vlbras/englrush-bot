@@ -58,8 +58,8 @@ class WordController {
     }
 
     async link(chatId, en, description, sentences) {
-        let word = await Word.findOne({en, chatId})
-        if(!word) return bot.sendMessage(chatId, `❗️'${en}' isn't added`)
+        let word = await Word.findOne({ en, chatId })
+        if (!word) return bot.sendMessage(chatId, `❗️'${en}' isn't added`)
 
         while (sentences.includes('\r\n')) {
             sentences = await sentences.replace('\r\n', ' ')
@@ -76,7 +76,7 @@ class WordController {
         await sentences.forEach(el => {
             let element
             element = ucFirst(el)
-            if(el[el.length - 1] != '?') element +='.'
+            if (el[el.length - 1] != '?') element += '.'
             context.push(ucFirst(element))
         })
         for (let i = 0; i < context.length; i++) {
@@ -100,9 +100,10 @@ class WordController {
         }
         //saving
         console.log(description, context)
+        await word.updateOne({ description, context })
         let contextStr = await textHandler(en, context)
-        description = await description.replace('__', `<b>${en}</b>`)
-        return bot.sendMessage(chatId, `${description}\n\n${contextStr}`, { parse_mode: "HTML" })
+        let descriptionStr = await description.replace('__', `<b>${en}</b>`)
+        return bot.sendMessage(chatId, `${descriptionStr}\n\n${contextStr}`, { parse_mode: "HTML" })
     }
 
     async remove(chatId, _id) {
@@ -122,9 +123,10 @@ class WordController {
 
         if (await Folder.findById(_id)) return wordOptions(chatId, 'openword ' + _id)
 
-        let { en, ru, context } = await Word.findById(_id)
+        let { en, ru, description, context } = await Word.findById(_id)
         let contextStr = await textHandler(en, context)
-        return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${contextStr}`, { parse_mode: "HTML" })
+        let descriptionStr = await description.replace('__', `<b>${en}</b>`)
+        return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${descriptionStr}\n\n${contextStr}`, { parse_mode: "HTML" })
     }
 }
 
