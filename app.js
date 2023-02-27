@@ -37,7 +37,6 @@ if (cluster.isWorker) {
 
     bot.on('message', msg => {
         router('/start', msg, main.start)
-        router('/link', msg, main.link)
         router('Create Quiz ➕', msg, main.create)
         router('Edit Quiz 📝', msg, main.edit)
 
@@ -82,9 +81,9 @@ if (cluster.isWorker) {
 
     app.post('/:chatId', (req, res) => {
         const chatId = req.params.chatId
+        const w = req.query.w
         const { description, context } = req.body
-        word.link(chatId, description, context)
-        // console.log(chatId, description, context)
+        word.link(chatId, w, description, context)
         res.send(`Success`)
     })
 }

@@ -19,7 +19,7 @@ class WordController {
 
     async add(chatId, name, _id) {
         if (!name) return bot.sendMessage(chatId, `❗️Name is ${name}`)
-        if (!(/^[a-zA-Z]+$/).test(name)) return bot.sendMessage(chatId, `❗️You must use only English letters in the name of the word`)
+        if (!(/^[a-zA-Z ]+$/).test(name)) return bot.sendMessage(chatId, `❗️You must use only English letters in the name of the word`)
         name = await name.toLowerCase()
         if (await Word.findOne({ en: name, chatId })) return bot.sendMessage(chatId, `❗️${name} already added`)
 
@@ -28,18 +28,16 @@ class WordController {
         if (!await Topic.findById(_id)) return bot.sendMessage(chatId, `❗️You should select an existing Topic`)
 
         return dictionary(async (err, dict) => {
-            // Nspell cheking
-            if (err) throw err
-            let spell = nspell(dict)
-            if (!spell.correct(name)) {
-                console.log(spell.suggest(name))
-                if (!Array.isArray(spell.suggest(name))) return bot.sendMessage(chatId, `❗️You meant '${spell.suggest(name)}'?`)
-                let arrayToText = ''
-                spell.suggest(name).forEach(e => arrayToText += e + ', ')
-                arrayToText = arrayToText.substring(0, arrayToText.length - 2)
-                return bot.sendMessage(chatId, `❗️You meant ${arrayToText}?`)
-            }
-            // Word parser
+            // if (err) throw err
+            // let spell = nspell(dict)
+            // if (!spell.correct(name)) {
+            //     console.log(spell.suggest(name))
+            //     if (!Array.isArray(spell.suggest(name))) return bot.sendMessage(chatId, `❗️You meant '${spell.suggest(name)}'?`)
+            //     let arrayToText = ''
+            //     spell.suggest(name).forEach(e => arrayToText += e + ', ')
+            //     arrayToText = arrayToText.substring(0, arrayToText.length - 2)
+            //     return bot.sendMessage(chatId, `❗️You meant ${arrayToText}?`)
+            // }
             const data = {}
             data.en = name
             data.ru = await translate(name, "ru");
@@ -53,23 +51,34 @@ class WordController {
             // for saving words
             const word = new Word({ en: data.en, ru: data.ru, topicId: _id, chatId })
             await word.save()
-            return bot.sendMessage(chatId, `${ucFirst(data.en)} - ${data.ru}`) //\n\n${contextStr}`, { parse_mode: "HTML" }
+            await bot.sendMessage(chatId, `${ucFirst(data.en)} - ${data.ru}`) //\n\n${contextStr}`, { parse_mode: "HTML" }
+            // return bot.sendMessage(chatId, `<a href="http://localhost:8000/${chatId}?w=${data.en}">Add Description and Context</a>`, { parse_mode: "HTML" })
+            return bot.sendMessage(chatId, `<a href="https://englrush-bot-vlbras.koyeb.app/${chatId}?w=${data.en}">Add Description and Context</a>`, { parse_mode: "HTML" })
         })
     }
 
-    async link(chatId, description, sentences) {
-        let en = await description.split(' ')[1]
+    async link(chatId, en, description, sentences) {
         let word = await Word.findOne({en, chatId})
         if(!word) return bot.sendMessage(chatId, `❗️'${en}' isn't added`)
 
         while (sentences.includes('\r\n')) {
             sentences = await sentences.replace('\r\n', ' ')
+            sentences = await sentences.replace('  ', ' ')
             description = await description.replace('\r\n', ' ')
         }
         sentences = await sentences.split(' | ')
+        console.log(sentences)
         description = await description.replace(en, '__')
         let context = []
-        await sentences.forEach(el => context.push(ucFirst(el) + '.'))
+
+        description = await ucFirst(description)
+        description = await description + '.'
+        await sentences.forEach(el => {
+            let element
+            element = ucFirst(el)
+            if(el[el.length - 1] != '?') element +='.'
+            context.push(ucFirst(element))
+        })
         for (let i = 0; i < context.length; i++) {
             for (let j = 0; j < 5; j++) {
                 if (await context[i].includes(' ' + en + ',')) {
@@ -81,6 +90,9 @@ class WordController {
                 else if (await context[i].includes(' ' + en + 's')) {
                     context[i] = await context[i].replace(' ' + en, ' __')
                 }
+                else if (await context[i].includes(' ' + en + '?')) {
+                    context[i] = await context[i].replace(' ' + en, ' __')
+                }
                 else if (await context[i].includes(' ' + en + ' ')) {
                     context[i] = await context[i].replace(' ' + en + ' ', ' __ ')
                 }
@@ -89,7 +101,7 @@ class WordController {
         //saving
         console.log(description, context)
         let contextStr = await textHandler(en, context)
-        description = description.replace('__', `<b>${en}</b>`)
+        description = await description.replace('__', `<b>${en}</b>`)
         return bot.sendMessage(chatId, `${description}\n\n${contextStr}`, { parse_mode: "HTML" })
     }
 
