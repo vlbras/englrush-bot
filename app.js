@@ -57,6 +57,7 @@ if (cluster.isWorker) {
     })
 
     bot.on('callback_query', msg => {
+        console.log(msg)
         bot.answerCallbackQuery(msg.id)
 
         router('rnfolder', msg, folder.rename)
@@ -72,6 +73,7 @@ if (cluster.isWorker) {
 
         router('quizword', msg, quiz.word)
         router('quizcontext', msg, quiz.context)
+        router('+rating', msg, quiz.plusRating)
     })
 
     app.get('/:chatId', (req, res) => {

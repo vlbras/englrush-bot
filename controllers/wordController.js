@@ -40,7 +40,7 @@ class WordController {
             // }
             const data = {}
             data.en = name
-            data.ru = await translate(name, "ru");
+            data.uk = await translate(name, "uk");
             let filepath = path.join(__dirname, `${data.en}.mp3`);
             gtts.save(filepath, data.en, async () => {
                 await bot.sendAudio(chatId, __dirname + `/${data.en}.mp3`, { performer: `EnglRush`, title: data.en })
@@ -49,9 +49,9 @@ class WordController {
                 })
             })
             // for saving words
-            const word = new Word({ en: data.en, ru: data.ru, topicId: _id, chatId })
+            const word = new Word({ en: data.en, uk: data.uk, topicId: _id, chatId })
             await word.save()
-            await bot.sendMessage(chatId, `${ucFirst(data.en)} - ${data.ru}`) //\n\n${contextStr}`, { parse_mode: "HTML" }
+            await bot.sendMessage(chatId, `${ucFirst(data.en)} - ${data.uk}`) //\n\n${contextStr}`, { parse_mode: "HTML" }
             // return bot.sendMessage(chatId, `<a href="http://localhost:8000/${chatId}?w=${data.en}">Add Description and Context</a>`, { parse_mode: "HTML" })
             return bot.sendMessage(chatId, `<a href="https://englrush-bot-vlbras.koyeb.app/${chatId}?w=${data.en}">Add Description and Context</a>`, { parse_mode: "HTML" })
         })
@@ -65,6 +65,7 @@ class WordController {
             sentences = await sentences.replace('\r\n', ' ')
             sentences = await sentences.replace('  ', ' ')
             description = await description.replace('\r\n', ' ')
+            description = await description.replace('  ', ' ')
         }
         sentences = await sentences.split(' | ')
         console.log(sentences)
@@ -123,10 +124,10 @@ class WordController {
 
         if (await Folder.findById(_id)) return wordOptions(chatId, 'openword ' + _id)
 
-        let { en, ru, description, context } = await Word.findById(_id)
+        let { en, uk, description, context } = await Word.findById(_id)
         let contextStr = await textHandler(en, context)
         let descriptionStr = await description.replace('__', `<b>${en}</b>`)
-        return bot.sendMessage(chatId, `${ucFirst(en)} - ${ru}\n\n${descriptionStr}\n\n${contextStr}`, { parse_mode: "HTML" })
+        return bot.sendMessage(chatId, `${ucFirst(en)} - ${uk}\n\n${descriptionStr}\n\n${contextStr}`, { parse_mode: "HTML" })
     }
 }
 

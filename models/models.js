@@ -32,7 +32,7 @@ const wordSchema = new Schema({
         type: String,
         require: true
     },
-    ru: {
+    uk: {
         type: String,
         require: true,
     },
@@ -42,6 +42,11 @@ const wordSchema = new Schema({
     },
     context: [String]
     ,
+    rating: {
+        type: Number,
+        default: 0,
+        require: true
+    },
     topicId: {
         type: String,
         require: true

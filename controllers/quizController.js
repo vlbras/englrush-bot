@@ -6,32 +6,34 @@ const topicOptions = require('../options/topicOptions')
 const { wordCommand } = require('../options/mainOptions')
 
 class QuizController {
-    async word(chatId, data, _id) {
-        let option = `quizword`
-        if (!_id) return topicOptions(chatId, `${option} 0 &&`)
-        let n = data.split(' ')[0]
-        let quizType = data.split(' ')[1]
-        if (!quizType) return bot.sendMessage(chatId, `Select Quiz type:`, {
-            reply_markup: JSON.stringify({
-                inline_keyboard: [
-                    [{ text: 'En-Ru', callback_data: `${option} 0 en && ${_id}` },
-                    { text: 'Ru-En', callback_data: `${option} 0 ru && ${_id}` }]]
-            })
-        })
 
-        let answers = []
+    async word(chatId, _id) {
+        let option = `quizword`
+        if (!_id) return topicOptions(chatId, `${option}`)
+
         let questions = []
+        let answers = []
         let words = await Word.find({ topicId: _id })
+        let lovest = words[0].rating
         words.forEach(el => {
-            if (quizType == 'en') {
-                questions.push(el.en) // anyQuestions
-                answers.push(el.ru) // anyAnswers
-            } else {
-                questions.push(el.ru) // anyQuestions
-                answers.push(el.en) // anyAnswers
+            if (el.rating < lovest) lovest = el.rating
+        })
+        words.forEach(el => {
+            if (el.rating == lovest) {
+                questions.push(el.en)
+                answers.push(el.uk)
             }
         })
-        return startQuiz(chatId, n, quizType, _id, words, questions, answers, option)
+        for (let i = questions.length - 1; i >= 0; i--) {
+            let text = `${questions.length - i}. ${questions[i]}`
+            await bot.sendMessage(chatId, text + `\n\n<tg-spoiler>${answers[i]}</tg-spoiler>`, {
+                reply_markup: JSON.stringify({
+                    inline_keyboard:
+                        [[{ text: `I know 👍`, callback_data: `+rating ${text}` }, { text: `I don't know 👎`, callback_data: `-rating` }]]
+                }), parse_mode: "HTML"
+            })
+        }
+        return
     }
 
     async context(chatId, data, _id) {
@@ -64,6 +66,11 @@ class QuizController {
         }
         quizType = quizType + ' ' + quizNumber
         return startQuiz(chatId, n, quizType, _id, words, questions, answers, option)
+    }
+
+    async plusRating(chatId, text, message_id){
+        console.log(text)
+        await bot.editMessageText(text, chatId, message_id)
     }
 }
 
