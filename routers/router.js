@@ -11,6 +11,7 @@ module.exports = router = async (option, msg, callback) => {
             return callback(chatId)
         }
     }
+    if(!text) return
     const command = await text.split(' ')[0]
     let name = await text.replace(command + " ", "").split(' && ')[0]
     let _id = await text.replace(command + " ", "").split(' && ')[1]
