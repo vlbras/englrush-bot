@@ -74,6 +74,7 @@ if (cluster.isWorker) {
         router('quizword', msg, quiz.word)
         router('quizcontext', msg, quiz.context)
         router('+rating', msg, quiz.plusRating)
+        router('-rating', msg, quiz.minusRating)
     })
 
     app.get('/:chatId', (req, res) => {

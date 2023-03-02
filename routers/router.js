@@ -15,9 +15,6 @@ module.exports = router = async (option, msg, callback) => {
     const command = await text.split(' ')[0]
     let name = await text.replace(command + " ", "").split(' && ')[0]
     let _id = await text.replace(command + " ", "").split(' && ')[1]
-    if (command === '+rating' || command === '-rating'){
-        name = text.replace(command + " ", "")
-        _id = msg.message.message_id
-    }
+    if ((command === '+rating') || (command === '-rating')) _id += '&' + msg.message.message_id
     if (command === option) return callback(chatId, name, _id)
 }

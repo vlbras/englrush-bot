@@ -29,7 +29,8 @@ class QuizController {
             await bot.sendMessage(chatId, text + `\n\n<tg-spoiler>${answers[i]}</tg-spoiler>`, {
                 reply_markup: JSON.stringify({
                     inline_keyboard:
-                        [[{ text: `I know 👍`, callback_data: `+rating ${text}` }, { text: `I don't know 👎`, callback_data: `-rating` }]]
+                        [[{ text: `It's very easy 👍`, callback_data: `+rating ${text} && ${questions[i]}` }, 
+                        { text: `It's not easy 👎`, callback_data: `-rating ${text} && ${questions[i]}` }]]
                 }), parse_mode: "HTML"
             })
         }
@@ -68,9 +69,17 @@ class QuizController {
         return startQuiz(chatId, n, quizType, _id, words, questions, answers, option)
     }
 
-    async plusRating(chatId, text, message_id){
-        console.log(text)
-        await bot.editMessageText(text, chatId, message_id)
+    async plusRating(chatId, text, data){
+        let en = await data.split('&')[0]
+        let messageId = await data.split('&')[1]
+        let word = await Word.findOne({en})
+        await word.updateOne({rating: word.rating + 1})
+        return bot.editMessageText(text + `\n\nIt's very easy 👍`, {chat_id: chatId, message_id: messageId})
+    }
+
+    async minusRating(chatId, text, data){
+        let messageId = await data.split('&')[1]
+        return bot.editMessageText(text + `\n\nIt's not easy 👎`, {chat_id: chatId, message_id: messageId})
     }
 }
 
