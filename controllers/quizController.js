@@ -37,42 +37,72 @@ class QuizController {
         return
     }
 
-    async context(chatId, data, _id) {
-        let option = `quizcontext`
-        if (!_id) return topicOptions(chatId, `${option} 0 &&`)
-        let n = data.split(' ')[0]
-        let quizType = data.split(' ')[1]
-        let quizNumber = Number(data.split(' ')[2])
-        if (!quizType) return bot.sendMessage(chatId, `Select Quiz type:`, {
-            reply_markup: JSON.stringify({
-                inline_keyboard:
-                    [[{ text: `Context-Word ⬇️`, callback_data: ` ` }, { text: `Word-Context ⬇️`, callback_data: ` ` }],
-                    [{ text: '1', callback_data: `${option} 0 context 0 && ${_id}` }, { text: '1', callback_data: `${option} 0 word 0 && ${_id}` }],
-                    [{ text: '2', callback_data: `${option} 0 context 1 && ${_id}` }, { text: `2 (Doesn't work)`, callback_data: `-` }], // ${option} 0 word 1 && ${_id}
-                    [{ text: '3', callback_data: `${option} 0 context 2 && ${_id}` }, { text: `2 (Doesn't work)`, callback_data: `-` }]], // ${option} 0 word 2 && ${_id}
-            })
-        })
+    async description(chatId, _id){
+        let option = `quizdesc`
+        if (!_id) return topicOptions(chatId, `${option}`)
 
-        let answers = []
         let questions = []
+        let answers = []
         let words = await Word.find({ topicId: _id })
-        for (let i = 0; i < words.length; i++) {
-            if (quizType == 'context') {
-                questions.push(words[i].context[quizNumber].en)
-                answers.push(words[i].en)
-            } else {
-                questions.push(words[i].en)
-                answers.push(words[i].context[quizNumber].en)
+        let lovest = words[0].rating
+        words.forEach(el => {
+            if (el.rating < lovest) lovest = el.rating
+        })
+        words.forEach( el => {
+            if (el.rating == lovest) {
+                questions.push(el.description)
+                answers.push(el.en)
             }
+        })
+        console.log(questions)
+        for (let i = questions.length - 1; i >= 0; i--) {
+            await bot.sendMessage(chatId, `${questions.length - i}. ${questions[i]}\n\n<tg-spoiler>${answers[i]}</tg-spoiler>`, {
+                reply_markup: JSON.stringify({
+                    inline_keyboard:
+                        [[{ text: `It's very easy 👍`, callback_data: `+rating ${questions.length - i}. ${answers[i]} && ${answers[i]}` }, 
+                        { text: `It's not easy 👎`, callback_data: `-rating ${questions.length - i}. ${answers[i]} && ${answers[i]}` }]]
+                }), parse_mode: "HTML"
+            })
         }
-        quizType = quizType + ' ' + quizNumber
-        return startQuiz(chatId, n, quizType, _id, words, questions, answers, option)
+        return
     }
+
+    // async context(chatId, data, _id) {
+    //     let option = `quizcontext`
+    //     if (!_id) return topicOptions(chatId, `${option} 0 &&`)
+    //     let n = data.split(' ')[0]
+    //     let quizType = data.split(' ')[1]
+    //     let quizNumber = Number(data.split(' ')[2])
+    //     if (!quizType) return bot.sendMessage(chatId, `Select Quiz type:`, {
+    //         reply_markup: JSON.stringify({
+    //             inline_keyboard:
+    //                 [[{ text: `Context-Word ⬇️`, callback_data: ` ` }, { text: `Word-Context ⬇️`, callback_data: ` ` }],
+    //                 [{ text: '1', callback_data: `${option} 0 context 0 && ${_id}` }, { text: '1', callback_data: `${option} 0 word 0 && ${_id}` }],
+    //                 [{ text: '2', callback_data: `${option} 0 context 1 && ${_id}` }, { text: `2 (Doesn't work)`, callback_data: `-` }], // ${option} 0 word 1 && ${_id}
+    //                 [{ text: '3', callback_data: `${option} 0 context 2 && ${_id}` }, { text: `2 (Doesn't work)`, callback_data: `-` }]], // ${option} 0 word 2 && ${_id}
+    //         })
+    //     })
+
+    //     let answers = []
+    //     let questions = []
+    //     let words = await Word.find({ topicId: _id })
+    //     for (let i = 0; i < words.length; i++) {
+    //         if (quizType == 'context') {
+    //             questions.push(words[i].context[quizNumber].en)
+    //             answers.push(words[i].en)
+    //         } else {
+    //             questions.push(words[i].en)
+    //             answers.push(words[i].context[quizNumber].en)
+    //         }
+    //     }
+    //     quizType = quizType + ' ' + quizNumber
+    //     return startQuiz(chatId, n, quizType, _id, words, questions, answers, option)
+    // }
 
     async plusRating(chatId, text, data){
         let en = await data.split('&')[0]
         let messageId = await data.split('&')[1]
-        let word = await Word.findOne({en})
+        let word = await Word.findOne({en, chatId})
         await word.updateOne({rating: word.rating + 1})
         return bot.editMessageText(text + `\n\nIt's very easy 👍`, {chat_id: chatId, message_id: messageId})
     }

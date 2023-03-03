@@ -53,7 +53,8 @@ if (cluster.isWorker) {
         router('Open Word', msg, word.open)
 
         router('Word Quiz ▶', msg, quiz.word)
-        router('Context Quiz ▶', msg, quiz.context)
+        router('Description ▶', msg, quiz.description)
+        // router('Context Quiz ▶', msg, quiz.context)
     })
 
     bot.on('callback_query', msg => {
@@ -72,7 +73,8 @@ if (cluster.isWorker) {
         router('rmword', msg, word.remove)
 
         router('quizword', msg, quiz.word)
-        router('quizcontext', msg, quiz.context)
+        router('quizdesc', msg, quiz.description)
+        // router('quizcontext', msg, quiz.context)
         router('+rating', msg, quiz.plusRating)
         router('-rating', msg, quiz.minusRating)
     })
