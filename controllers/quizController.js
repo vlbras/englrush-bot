@@ -8,8 +8,7 @@ const { wordCommand } = require('../options/mainOptions')
 class QuizController {
 
     async word(chatId, _id) {
-        let option = `quizword`
-        if (!_id) return topicOptions(chatId, `${option}`)
+        if (!_id) return topicOptions(chatId, `quizword`)
 
         let questions = []
         let answers = []
@@ -29,7 +28,7 @@ class QuizController {
             await bot.sendMessage(chatId, text + `\n\n<tg-spoiler>${answers[i]}</tg-spoiler>`, {
                 reply_markup: JSON.stringify({
                     inline_keyboard:
-                        [[{ text: `It's very easy 👍`, callback_data: `+rating ${text} && ${questions[i]}` }, 
+                        [[{ text: `It's very easy 👍`, callback_data: `+rating ${text} && ${questions[i]}` },
                         { text: `It's not easy 👎`, callback_data: `-rating ${text} && ${questions[i]}` }]]
                 }), parse_mode: "HTML"
             })
@@ -37,9 +36,8 @@ class QuizController {
         return
     }
 
-    async description(chatId, _id){
-        let option = `quizdesc`
-        if (!_id) return topicOptions(chatId, `${option}`)
+    async description(chatId, _id) {
+        if (!_id) return topicOptions(chatId, `quizdescription`)
 
         let questions = []
         let answers = []
@@ -48,18 +46,17 @@ class QuizController {
         words.forEach(el => {
             if (el.rating < lovest) lovest = el.rating
         })
-        words.forEach( el => {
+        words.forEach(el => {
             if (el.rating == lovest) {
                 questions.push(el.description)
                 answers.push(el.en)
             }
         })
-        console.log(questions)
         for (let i = questions.length - 1; i >= 0; i--) {
             await bot.sendMessage(chatId, `${questions.length - i}. ${questions[i]}\n\n<tg-spoiler>${answers[i]}</tg-spoiler>`, {
                 reply_markup: JSON.stringify({
                     inline_keyboard:
-                        [[{ text: `It's very easy 👍`, callback_data: `+rating ${questions.length - i}. ${answers[i]} && ${answers[i]}` }, 
+                        [[{ text: `It's very easy 👍`, callback_data: `+rating ${questions.length - i}. ${answers[i]} && ${answers[i]}` },
                         { text: `It's not easy 👎`, callback_data: `-rating ${questions.length - i}. ${answers[i]} && ${answers[i]}` }]]
                 }), parse_mode: "HTML"
             })
@@ -67,49 +64,49 @@ class QuizController {
         return
     }
 
-    // async context(chatId, data, _id) {
-    //     let option = `quizcontext`
-    //     if (!_id) return topicOptions(chatId, `${option} 0 &&`)
-    //     let n = data.split(' ')[0]
-    //     let quizType = data.split(' ')[1]
-    //     let quizNumber = Number(data.split(' ')[2])
-    //     if (!quizType) return bot.sendMessage(chatId, `Select Quiz type:`, {
-    //         reply_markup: JSON.stringify({
-    //             inline_keyboard:
-    //                 [[{ text: `Context-Word ⬇️`, callback_data: ` ` }, { text: `Word-Context ⬇️`, callback_data: ` ` }],
-    //                 [{ text: '1', callback_data: `${option} 0 context 0 && ${_id}` }, { text: '1', callback_data: `${option} 0 word 0 && ${_id}` }],
-    //                 [{ text: '2', callback_data: `${option} 0 context 1 && ${_id}` }, { text: `2 (Doesn't work)`, callback_data: `-` }], // ${option} 0 word 1 && ${_id}
-    //                 [{ text: '3', callback_data: `${option} 0 context 2 && ${_id}` }, { text: `2 (Doesn't work)`, callback_data: `-` }]], // ${option} 0 word 2 && ${_id}
-    //         })
-    //     })
+    async context(chatId, _id) {
+        if (!_id) return topicOptions(chatId, `quizcontext`)
 
-    //     let answers = []
-    //     let questions = []
-    //     let words = await Word.find({ topicId: _id })
-    //     for (let i = 0; i < words.length; i++) {
-    //         if (quizType == 'context') {
-    //             questions.push(words[i].context[quizNumber].en)
-    //             answers.push(words[i].en)
-    //         } else {
-    //             questions.push(words[i].en)
-    //             answers.push(words[i].context[quizNumber].en)
-    //         }
-    //     }
-    //     quizType = quizType + ' ' + quizNumber
-    //     return startQuiz(chatId, n, quizType, _id, words, questions, answers, option)
-    // }
-
-    async plusRating(chatId, text, data){
-        let en = await data.split('&')[0]
-        let messageId = await data.split('&')[1]
-        let word = await Word.findOne({en, chatId})
-        await word.updateOne({rating: word.rating + 1})
-        return bot.editMessageText(text + `\n\nIt's very easy 👍`, {chat_id: chatId, message_id: messageId})
+        let questions = []
+        let answers = []
+        let words = await Word.find({ topicId: _id })
+        let lovest = words[0].rating
+        words.forEach(el => {
+            if (el.rating < lovest) lovest = el.rating
+        })
+        words.forEach(el => {
+            if (el.rating == lovest) {
+                let rand = Math.floor(Math.random() * (el.context.length))
+                questions.push(el.context[rand])
+                answers.push(el.en)
+            }
+        })
+        for (let i = questions.length - 1; i >= 0; i--) {
+            let options = [answers[i]]
+            while (options.length != 5) {
+                let rand = Math.floor(Math.random() * (words.length))
+                if (!options.includes(answers[rand])) options.push(answers[rand])
+                let temp = options[rand % options.length]
+                options[rand % options.length] = options[i % options.length]
+                options[i % options.length] = temp
+            }
+            await bot.sendPoll(chatId, `${questions[i]}`, [options[0], options[1], options[2], options[3], options[4]], { type: 'quiz', correct_option_id: options.indexOf(answers[i]) })
+            options = []
+        }
+        return
     }
 
-    async minusRating(chatId, text, data){
+    async plusRating(chatId, text, data) {
+        let en = await data.split('&')[0]
         let messageId = await data.split('&')[1]
-        return bot.editMessageText(text + `\n\nIt's not easy 👎`, {chat_id: chatId, message_id: messageId})
+        let word = await Word.findOne({ en, chatId })
+        await word.updateOne({ rating: word.rating + 1 })
+        return bot.editMessageText(text + `\n\nIt's very easy 👍`, { chat_id: chatId, message_id: messageId })
+    }
+
+    async minusRating(chatId, text, data) {
+        let messageId = await data.split('&')[1]
+        return bot.editMessageText(text + `\n\nIt's not easy 👎`, { chat_id: chatId, message_id: messageId })
     }
 }
 
@@ -133,13 +130,6 @@ let startQuiz = async (chatId, n, quizType, _id, words, anyQuestions, anyAnswers
         }
         await bot.sendPoll(chatId, `${anyQuestions[i]}`, [answers[0], answers[1], answers[2], answers[3], answers[4]], { type: 'quiz', correct_option_id: answers.indexOf(anyAnswers[i]) })
         answers = []
-    }
-    if (words[i]) {
-        return bot.sendMessage(chatId, `Would you like to continue?`, {
-            reply_markup: JSON.stringify({
-                inline_keyboard: [[{ text: 'Next', callback_data: `${option} ${words.length - 1 - i} ${quizType} && ${_id}` }]]
-            })
-        })
     }
     return
 }
