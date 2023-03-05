@@ -59,7 +59,7 @@ if (cluster.isWorker) {
 
     bot.on('callback_query', msg => {
         console.log(msg)
-        bot.answerCallbackQuery(msg.id)
+        // bot.answerCallbackQuery(msg.id)
 
         router('rnfolder', msg, folder.rename)
         router('rmfolder', msg, folder.remove)
