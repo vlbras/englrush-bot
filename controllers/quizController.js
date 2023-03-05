@@ -101,12 +101,12 @@ class QuizController {
         let messageId = await data.split('&')[1]
         let word = await Word.findOne({ en, chatId })
         await word.updateOne({ rating: word.rating + 1 })
-        return bot.editMessageText(text + `\n\nIt's very easy 👍`, { chat_id: chatId, message_id: messageId })
+        return bot.editMessageText(text + `\n\nIt's very easy ✅`, { chat_id: chatId, message_id: messageId })
     }
 
     async minusRating(chatId, text, data) {
         let messageId = await data.split('&')[1]
-        return bot.editMessageText(text + `\n\nIt's not easy 👎`, { chat_id: chatId, message_id: messageId })
+        return bot.editMessageText(text + `\n\nIt's not easy ❌`, { chat_id: chatId, message_id: messageId })
     }
 }
 
