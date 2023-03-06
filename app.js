@@ -10,8 +10,6 @@ const topic = require('./controllers/topicController')
 const word = require('./controllers/wordController')
 const quiz = require('./controllers/quizController')
 
-const { Word } = require('./models/models')
-
 var cluster = require('cluster');
 if (cluster.isMaster) {
     cluster.fork();
@@ -59,7 +57,7 @@ if (cluster.isWorker) {
 
     bot.on('callback_query', msg => {
         console.log(msg)
-        // bot.answerCallbackQuery(msg.id)
+        bot.answerCallbackQuery(msg.id)
 
         router('rnfolder', msg, folder.rename)
         router('rmfolder', msg, folder.remove)
