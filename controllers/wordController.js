@@ -19,7 +19,7 @@ class WordController {
 
     async add(chatId, name, _id) {
         if (!name) return bot.sendMessage(chatId, `❗️Name is ${name}`)
-        if (!(/^[a-zA-Z' ]+$/).test(name)) return bot.sendMessage(chatId, `❗️You must use only English letters in the name of the word`)
+        if (!(/^[a-zA-Z'’ ]+$/).test(name)) return bot.sendMessage(chatId, `❗️You must use only English letters in the name of the word`)
         name = await name.toLowerCase()
         if (await Word.findOne({ en: name, chatId })) return bot.sendMessage(chatId, `❗️${name} already added`)
 
