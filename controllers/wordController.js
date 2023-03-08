@@ -97,6 +97,9 @@ class WordController {
                 else if (await context[i].includes(' ' + en + 'ing')) {
                     context[i] = await context[i].replace(' ' + en, ' __')
                 }
+                else if (await context[i].includes(' ' + en + 'd')) {
+                    context[i] = await context[i].replace(' ' + en, ' __')
+                }
                 else if (await context[i].includes(' ' + en + 'ed')) {
                     context[i] = await context[i].replace(' ' + en, ' __')
                 }
