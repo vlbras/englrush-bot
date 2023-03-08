@@ -82,36 +82,17 @@ class WordController {
         })
         for (let i = 0; i < context.length; i++) {
             for (let j = 0; j < 5; j++) {
-                if (await context[i].includes(' ' + en + ',')) {
-                    context[i] = await context[i].replace(' ' + en + ',', ' __,')
-                }
-                else if (await context[i].includes(' ' + en + '.')) {
-                    context[i] = await context[i].replace(' ' + en + '.', ' __.')
-                }
-                else if (await context[i].includes(' ' + en + 's')) {
-                    context[i] = await context[i].replace(' ' + en, ' __')
-                }
-                else if (await context[i].includes(' ' + en + '’s')) {
-                    context[i] = await context[i].replace(' ' + en, ' __')
-                }
-                else if (await context[i].includes(' ' + en + 'ing')) {
-                    context[i] = await context[i].replace(' ' + en, ' __')
-                }
-                else if (await context[i].includes(' ' + en + 'd')) {
-                    context[i] = await context[i].replace(' ' + en, ' __')
-                }
-                else if (await context[i].includes(' ' + en + 'ed')) {
-                    context[i] = await context[i].replace(' ' + en, ' __')
-                }
-                else if (await context[i].includes(' ' + en + en[en.length - 1] + 'ed')) {
-                    context[i] = await context[i].replace(' ' + en, ' __' + en[en.length - 1])
-                }
-                else if (await context[i].includes(' ' + en + '?')) {
-                    context[i] = await context[i].replace(' ' + en, ' __')
-                }
-                else if (await context[i].includes(' ' + en + ' ')) {
-                    context[i] = await context[i].replace(' ' + en + ' ', ' __ ')
-                }
+                if (await context[i].includes(' ' + en + ',')) context[i] = await context[i].replace(' ' + en + ',', ' __,')
+                else if (await context[i].includes(' ' + en + '.')) context[i] = await context[i].replace(' ' + en + '.', ' __.')
+                else if (await context[i].includes(' ' + en + 's')) context[i] = await context[i].replace(' ' + en, ' __')
+                else if (await context[i].includes(' ' + en + '’s')) context[i] = await context[i].replace(' ' + en, ' __')
+                else if (await context[i].includes(' ' + en + 'ing')) context[i] = await context[i].replace(' ' + en, ' __')
+                else if (await context[i].includes(' ' + en + 'd')) context[i] = await context[i].replace(' ' + en, ' __')
+                else if (await context[i].includes(' ' + en + 'ed')) context[i] = await context[i].replace(' ' + en, ' __')
+                else if (await context[i].includes(' ' + en + en[en.length - 1] + 'ed')) context[i] = await context[i].replace(' ' + en, ' __' + en[en.length - 1])
+                else if (await context[i].includes(' ' + en + '?')) context[i] = await context[i].replace(' ' + en, ' __')
+                else if (await context[i].includes(' ' + en + '!')) context[i] = await context[i].replace(' ' + en, ' __')
+                else if (await context[i].includes(' ' + en + ' ')) context[i] = await context[i].replace(' ' + en + ' ', ' __ ')
             }
         }
         //saving
