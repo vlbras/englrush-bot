@@ -28,16 +28,6 @@ class WordController {
         if (!await Topic.findById(_id)) return bot.sendMessage(chatId, `❗️You should select an existing Topic`)
 
         return dictionary(async (err, dict) => {
-            // if (err) throw err
-            // let spell = nspell(dict)
-            // if (!spell.correct(name)) {
-            //     console.log(spell.suggest(name))
-            //     if (!Array.isArray(spell.suggest(name))) return bot.sendMessage(chatId, `❗️You meant '${spell.suggest(name)}'?`)
-            //     let arrayToText = ''
-            //     spell.suggest(name).forEach(e => arrayToText += e + ', ')
-            //     arrayToText = arrayToText.substring(0, arrayToText.length - 2)
-            //     return bot.sendMessage(chatId, `❗️You meant ${arrayToText}?`)
-            // }
             const data = {}
             data.en = name
             data.uk = await translate(name, "uk");
