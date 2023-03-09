@@ -5,6 +5,8 @@ const { Topic, Word } = require('../models/models')
 const topicOptions = require('../options/topicOptions')
 const { wordCommand } = require('../options/mainOptions')
 
+const words = require('./wordController')
+
 class QuizController {
 
     async word(chatId, _id) {
@@ -105,8 +107,11 @@ class QuizController {
     }
 
     async minusRating(chatId, text, data) {
+        let en = await data.split('&')[0]
         let messageId = await data.split('&')[1]
-        return bot.editMessageText(text + `\n\nIt's not easy ❌`, { chat_id: chatId, message_id: messageId })
+        let word = await Word.findOne({ en, chatId })
+        await words.open(chatId, word._id)
+        return bot.editMessageText(text + `\n\nIt's not easy ❌`,{ chat_id: chatId, message_id: messageId })
     }
 }
 
