@@ -27,24 +27,31 @@ class WordController {
 
         if (!await Topic.findById(_id)) return bot.sendMessage(chatId, `❗️You should select an existing Topic`)
 
-        return dictionary(async (err, dict) => {
-            const data = {}
-            data.en = name
-            data.uk = await translate(name, "uk");
-            let filepath = path.join(__dirname, `${data.en}.mp3`);
-            gtts.save(filepath, data.en, async () => {
-                await bot.sendAudio(chatId, __dirname + `/${data.en}.mp3`, { performer: `EnglRush`, title: data.en })
-                fs.unlink(__dirname + `/${data.en}.mp3`, err => {
-                    if (err) console.log(err)
-                })
+        const data = {}
+        data.en = name
+        data.uk = await translate(name, "uk");
+        let filepath = path.join(__dirname, `${data.en}.mp3`);
+        gtts.save(filepath, data.en, async () => {
+            await bot.sendAudio(chatId, __dirname + `/${data.en}.mp3`, { performer: `EnglRush`, title: data.en })
+            fs.unlink(__dirname + `/${data.en}.mp3`, err => {
+                if (err) console.log(err)
             })
-            // for saving words
-            const word = new Word({ en: data.en, uk: data.uk, topicId: _id, chatId })
-            await word.save()
-            await bot.sendMessage(chatId, `${ucFirst(data.en)} - ${data.uk}`) //\n\n${contextStr}`, { parse_mode: "HTML" }
-            // return bot.sendMessage(chatId, `<a href="http://localhost:8000/${chatId}?w=${data.en}">Add Description and Context</a>`, { parse_mode: "HTML" })
-            return bot.sendMessage(chatId, `<a href="https://englrush-bot-vlbras.koyeb.app/${chatId}?w=${data.en}">Add Description and Context</a>`, { parse_mode: "HTML" })
         })
+        // for saving words
+        let word
+        let temp = await Word.findOne({ en: data.en })
+        if (temp) {
+            word = new Word({ en: data.en, uk: temp.uk, description: temp.description, context: temp.context, topicId: _id, chatId })
+            await word.save()
+            let contextStr = await textHandler(data.en, temp.context)
+            let descriptionStr = await temp.description.replace('__', `<b>${data.en}</b>`)
+            return bot.sendMessage(chatId, `${ucFirst(data.en)} - ${temp.uk}\n\n${descriptionStr}\n\n${contextStr}`, { parse_mode: "HTML" })
+        }
+
+        word = new Word({ en: data.en, uk: data.uk, topicId: _id, chatId })
+        await word.save()
+        await bot.sendMessage(chatId, `${ucFirst(data.en)} - ${data.uk}`) //\n\n${contextStr}`, { parse_mode: "HTML" }
+        return bot.sendMessage(chatId, `<a href="https://englrush-bot-vlbras.koyeb.app/${chatId}?w=${data.en}">Add Description and Context</a>`, { parse_mode: "HTML" })
     }
 
     async link(chatId, en, description, sentences) {
