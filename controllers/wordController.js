@@ -88,7 +88,7 @@ class WordController {
                 else if (await context[i].includes(' ' + en + 'd')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + 'ed')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + en[en.length - 1] + 'ed')) context[i] = await context[i].replace(' ' + en, ' __' + en[en.length - 1])
-                else if (await context[i].includes(await ucFirst(en) + ' ')) context[i] = await context[i].replace(await ucFirst(en), '__')
+                else if (await context[i].includes(await ucFirst(en))) context[i] = await context[i].replace(await ucFirst(en), '__')
                 else if (await context[i].includes(' ' + en + '?')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + '!')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + ' ')) context[i] = await context[i].replace(' ' + en + ' ', ' __ ')
