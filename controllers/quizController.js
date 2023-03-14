@@ -1,7 +1,7 @@
 const TelegramApi = require('node-telegram-bot-api')
 const bot = new TelegramApi(process.env.TOKEN)
 
-const { Topic, Word } = require('../models/models')
+const { Topic, Word, Dictionary } = require('../models/models')
 const topicOptions = require('../options/topicOptions')
 const { wordCommand } = require('../options/mainOptions')
 
@@ -19,8 +19,16 @@ class QuizController {
         words.forEach(el => {
             if (el.rating < lovest) lovest = el.rating
         })
-        words.forEach(el => {
-            if (el.rating == lovest) {
+        words.forEach(async el => {
+            if (el.rating == 6) {
+                const { en, uk, description, context } = await Word.findOne({ en: el.en, chatId })
+                await Word.findOneAndDelete({ en: el.en, chatId })
+                if (!await Dictionary.findOne({ en })) {
+                    let dict = new Dictionary({ en, uk, description, context })
+                    return dict.save()
+                }
+            }
+            else if (el.rating == lovest) {
                 questions.push(el.en)
                 answers.push(el.uk)
             }
@@ -48,8 +56,16 @@ class QuizController {
         words.forEach(el => {
             if (el.rating < lovest) lovest = el.rating
         })
-        words.forEach(el => {
-            if (el.rating == lovest) {
+        words.forEach(async el => {
+            if (el.rating == 6) {
+                const { en, uk, description, context } = await Word.findOne({ en: el.en, chatId })
+                await Word.findOneAndDelete({ en: el.en, chatId })
+                if (!await Dictionary.findOne({ en })) {
+                    let dict = new Dictionary({ en, uk, description, context })
+                    return dict.save()
+                }
+            }
+            else if (el.rating == lovest) {
                 questions.push(el.description)
                 answers.push(el.en)
             }
@@ -111,7 +127,7 @@ class QuizController {
         let messageId = await data.split('&')[1]
         let word = await Word.findOne({ en, chatId })
         await words.open(chatId, word._id)
-        return bot.editMessageText(text + `\n\nIt's not easy ❌`,{ chat_id: chatId, message_id: messageId })
+        return bot.editMessageText(text + `\n\nIt's not easy ❌`, { chat_id: chatId, message_id: messageId })
     }
 }
 
