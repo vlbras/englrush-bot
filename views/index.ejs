@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EnglRush</title>
 </head>
+
 <body>
     <div style="text-align: center; margin-top: 50px;">
         <form method="post">
@@ -13,8 +15,29 @@
             <textarea required style="font-family: Arial, Helvetica, sans-serif;" name="description" placeholder="Description" cols="30" rows="5"></textarea><br>
             <h2>Context</h2>
             <textarea required style="font-family: Arial, Helvetica, sans-serif;" name='context' placeholder="Context" cols="30" rows="10"></textarea><br><br>
+            <label class="manual"><input type="checkbox" data-blockclass="hidden">Manual translation</label><br><br>
+            <div class="blocks hidden">
+                <textarea style="font-family: Arial, Helvetica, sans-serif;" name='uk' placeholder="Translation" cols="30" rows="1"></textarea><br><br>
+            </div>
             <input type="submit" value="Send">
         </form>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        $("input[type='checkbox']").click(function () {
+            $(".blocks").hide();
+            $("input[type='checkbox']").not(this).each(function () {
+                this.checked = false;
+            });
+            if (this.checked)
+                $("." + $(this).data("blockclass")).show();
+        });
+    </script>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </body>
+
 </html>

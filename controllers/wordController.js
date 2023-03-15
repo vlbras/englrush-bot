@@ -54,7 +54,7 @@ class WordController {
         return bot.sendMessage(chatId, `<a href="https://englrush-bot-vlbras.koyeb.app/${chatId}?w=${data.en}">Add Description and Context</a>`, { parse_mode: "HTML" })
     }
 
-    async link(chatId, en, description, sentences) {
+    async link(chatId, en, description, sentences, uk) {
         let word = await Word.findOne({ en, chatId })
         if (!word) return bot.sendMessage(chatId, `❗️'${en}' isn't added`)
 
@@ -84,6 +84,7 @@ class WordController {
                 else if (await context[i].includes(' ' + en + 's')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + '’s')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + 'es')) context[i] = await context[i].replace(' ' + en, ' __')
+                else if (await context[i].includes(' ' + en + 'r')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + 'ing')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + 'd')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + 'ed')) context[i] = await context[i].replace(' ' + en, ' __')
@@ -96,7 +97,8 @@ class WordController {
         }
         //saving
         console.log(description, context)
-        await word.updateOne({ description, context })
+        if (uk) await word.updateOne({ description, context, uk })
+        else await word.updateOne({ description, context })
         let contextStr = await textHandler(en, context)
         let descriptionStr = await description.replace('__', `<b>${en}</b>`)
         return bot.sendMessage(chatId, `${descriptionStr}\n\n${contextStr}`, { parse_mode: "HTML" })
