@@ -15,7 +15,7 @@ class QuizController {
         let questions = []
         let answers = []
         let words = await Word.find({ topicId: _id })
-        if(!words) await bot.sendMessage(chatId, "❗️No words added")
+        if (!words) await bot.sendMessage(chatId, "❗️No words added")
         let lovest = words[0].rating
         words.forEach(el => {
             if (el.rating < lovest) lovest = el.rating
@@ -89,18 +89,15 @@ class QuizController {
         let questions = []
         let answers = []
         let words = await Word.find({ topicId: _id })
-        let lovest = words[0].rating
-        words.forEach(el => {
-            if (el.rating < lovest) lovest = el.rating
-        })
-        words.forEach(el => {
-            if (el.rating == lovest) {
-                let rand = Math.floor(Math.random() * (el.context.length))
-                questions.push(el.context[rand])
-                answers.push(el.en)
-            }
-        })
-        for (let i = questions.length - 1; i >= 0; i--) {
+
+        for await (const el of words) {
+            let rand = Math.floor(Math.random() * (el.context.length))
+            questions.push(el.context[rand])
+            answers.push(el.en)
+        }
+
+        for await (const item of questions) {
+            let i = questions.indexOf(item)
             let options = [answers[i]]
             while (options.length != 5) {
                 let rand = Math.floor(Math.random() * (words.length))
