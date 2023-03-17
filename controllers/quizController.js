@@ -53,7 +53,10 @@ class QuizController {
         let questions = []
         let answers = []
         let words = await Word.find({ topicId: _id })
+        console.log("+")
+        console.log(words)
         let lovest = words[0].rating
+        
         words.forEach(el => {
             if (el.rating < lovest) lovest = el.rating
         })
