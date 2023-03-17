@@ -92,6 +92,7 @@ class QuizController {
         let questions = []
         let answers = []
         let words = await Word.find({ topicId: _id })
+        if (!words.length) return bot.sendMessage(chatId, "❗️No words added")
 
         for await (const el of words) {
             let rand = Math.floor(Math.random() * (el.context.length))
