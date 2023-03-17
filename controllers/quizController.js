@@ -15,7 +15,8 @@ class QuizController {
         let questions = []
         let answers = []
         let words = await Word.find({ topicId: _id })
-        if (!words) await bot.sendMessage(chatId, "❗️No words added")
+        if (!words.length) return bot.sendMessage(chatId, "❗️No words added")
+        
         let lovest = words[0].rating
         words.forEach(el => {
             if (el.rating < lovest) lovest = el.rating
@@ -53,10 +54,9 @@ class QuizController {
         let questions = []
         let answers = []
         let words = await Word.find({ topicId: _id })
-        console.log("+")
-        console.log(words)
+        if (!words.length) return bot.sendMessage(chatId, "❗️No words added")
+
         let lovest = words[0].rating
-        
         words.forEach(el => {
             if (el.rating < lovest) lovest = el.rating
         })
