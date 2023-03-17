@@ -24,6 +24,7 @@ if (cluster.isWorker) {
     app.get('/', (req, res) => res.send('Hello World')).listen(process.env.PORT || 8000, () => console.log(`http://localhost:8000`))
     app.set('view engine', 'ejs')
     app.use(express.urlencoded({ extended: true })) // true for Arrays
+    app.use(express.json());
 
     mongoose
         .set('strictQuery', false) // WTF
