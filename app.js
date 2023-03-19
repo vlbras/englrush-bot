@@ -49,7 +49,8 @@ if (cluster.isWorker) {
 
         router('/w', msg, word.add)
         router('Delete Word', msg, word.remove)
-        router('Open Word', msg, word.open)
+        // router('Open Word', msg, word.open)
+        router('Statistics 📈', msg, word.stat)
 
         router('Word Quiz ▶', msg, quiz.word)
         router('Description ▶', msg, quiz.description)

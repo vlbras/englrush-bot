@@ -127,6 +127,19 @@ class WordController {
         let descriptionStr = await description.replace('__', `<b>${en}</b>`)
         return bot.sendMessage(chatId, `${ucFirst(en)} - ${uk}\n\n${descriptionStr}\n\n${contextStr}`, { parse_mode: "HTML" })
     }
+
+    async stat(chatId) {
+        const topics = await Topic.find({ chatId })
+        if (!topics) return bot.sendMessage(chatId, `❗️No one word in Topic added`)
+
+        let statistics = ''
+        let topicWords
+        for await (let e of topics) {
+            topicWords = await Word.find({ chatId, topicId: e._id })
+            statistics += `${e.name}: ${topicWords.length}\n`
+        }
+        return bot.sendMessage(chatId, statistics)
+    }
 }
 
 let ucFirst = (str) => {

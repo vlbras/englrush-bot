@@ -2,7 +2,7 @@ const mainOptions = {
     "reply_markup": {
         "keyboard": [
             ["Word Quiz ▶", "Description ▶", "Context ▶"],
-            ["Create Quiz ➕", "Edit Quiz 📝","Open Word"],
+            ["Create Quiz ➕", "Edit Quiz 📝","Statistics 📈"],
             ["Delete 🗂","Delete 📒", "Delete Word"]
         ], "resize_keyboard": true
     }
