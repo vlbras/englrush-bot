@@ -1,7 +1,7 @@
 const TelegramApi = require('node-telegram-bot-api')
 const bot = new TelegramApi(process.env.TOKEN)
 
-const { Word, Topic, Folder } = require('../models/models')
+const { Word, Topic, Folder, Dictionary } = require('../models/models')
 const folderOptions = require('../options/folderOptions')
 const topicOptions = require('../options/topicOptions')
 const wordOptions = require('../options/wordOptions')
@@ -40,6 +40,7 @@ class WordController {
         // for saving words
         let word
         let temp = await Word.findOne({ en: data.en })
+        if (!temp) temp = await Dictionary.findOne({en: data.en})
         if (temp) {
             word = new Word({ en: data.en, uk: temp.uk, description: temp.description, context: temp.context, topicId: _id, chatId })
             await word.save()
