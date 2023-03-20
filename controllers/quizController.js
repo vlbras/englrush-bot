@@ -30,7 +30,7 @@ class QuizController {
                     await dict.save()
                 }
                 await Topic.findByIdAndDelete(topicId)
-                return bot.sendMessage(`✅ Congrats! You know all words from this 📒 Topic, so I delete it`)
+                return bot.sendMessage(`✅ Congrats! You know all words from this 📒, so I delete it`)
             }
             else if (el.rating == lovest) {
                 questions.push(el.en)
@@ -95,6 +95,7 @@ class QuizController {
         let answers = []
         let words = await Word.find({ topicId: _id })
         if (!words.length) return bot.sendMessage(chatId, "❗️No words added")
+        if(words.length < 5) return bot.sendMessage(chatId, `❗️You need minimum 5 words in 📒`)
 
         for await (const el of words) {
             let rand = Math.floor(Math.random() * (el.context.length))
