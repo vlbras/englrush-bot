@@ -40,12 +40,15 @@ class WordController {
         // for saving words
         let word
         let temp = await Word.findOne({ en: data.en })
-        if (!temp) temp = await Dictionary.findOne({en: data.en})
+        if (!temp) temp = await Dictionary.findOne({ en: data.en })
         if (temp) {
             word = new Word({ en: data.en, uk: temp.uk, description: temp.description, context: temp.context, topicId: _id, chatId })
             await word.save()
             let contextStr = await textHandler(data.en, temp.context)
-            let descriptionStr = await temp.description.replace('__', `<b>${data.en}</b>`)
+            let descriptionStr = temp.description.replace('__', `<b>${data.en}</b>`)
+            while (temp.description.includes(`__`)) {
+                descriptionStr = temp.description.replace('__', `<b>${data.en}</b>`)
+            }
             return bot.sendMessage(chatId, `${ucFirst(data.en)} - ${temp.uk}\n\n${descriptionStr}\n\n${contextStr}`, { parse_mode: "HTML" })
         }
 
@@ -125,7 +128,10 @@ class WordController {
 
         let { en, uk, description, context } = await Word.findById(_id)
         let contextStr = await textHandler(en, context)
-        let descriptionStr = await description.replace('__', `<b>${en}</b>`)
+        let descriptionStr = description.replace('__', `<b>${en}</b>`)
+        while (descriptionStr.includes(`__`)) {
+            descriptionStr = description.replace('__', `<b>${en}</b>`)
+        }
         return bot.sendMessage(chatId, `${ucFirst(en)} - ${uk}\n\n${descriptionStr}\n\n${contextStr}`, { parse_mode: "HTML" })
     }
 
