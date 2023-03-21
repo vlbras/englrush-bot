@@ -40,7 +40,7 @@ class WordController {
         // for saving words
         let word
         let temp = await Word.findOne({ en: data.en })
-        if (!temp) temp = await Dictionary.findOne({en: data.en})
+        if (!temp) temp = await Dictionary.findOne({ en: data.en })
         if (temp) {
             word = new Word({ en: data.en, uk: temp.uk, description: temp.description, context: temp.context, topicId: _id, chatId })
             await word.save()
@@ -66,7 +66,7 @@ class WordController {
             description = await description.replace('  ', ' ')
         }
         sentences = await sentences.split(' | ')
-        while(await description.includes(en)){
+        while (await description.includes(en)) {
             description = await description.replace(en, '__')
         }
         let context = []
@@ -98,11 +98,15 @@ class WordController {
                 else if (await context[i].includes(' ' + en + ' ')) context[i] = await context[i].replace(' ' + en + ' ', ' __ ')
             }
         }
+        let fixedContext = []
+        await context.forEach(el => {
+            if (el.includes('__')) fixedContext.push(el)
+        })
         //saving
-        console.log(description, context)
-        if (uk) await word.updateOne({ description, context, uk })
-        else await word.updateOne({ description, context })
-        let contextStr = await textHandler(en, context)
+        console.log(description, fixedContext)
+        if (uk) await word.updateOne({ description, context: fixedContext, uk })
+        else await word.updateOne({ description, context: fixedContext })
+        let contextStr = await textHandler(en, fixedContext)
         let descriptionStr = await description.replace('__', `<b>${en}</b>`)
         while (await descriptionStr.includes(`__`)) {
             descriptionStr = await descriptionStr.replace('__', `<b>${en}</b>`)
