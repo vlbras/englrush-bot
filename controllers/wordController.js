@@ -62,6 +62,8 @@ class WordController {
         while (sentences.includes('\r\n')) {
             sentences = await sentences.replace('\r\n', ' ')
             sentences = await sentences.replace('  ', ' ')
+        }
+        while (description.includes('\r\n')) {
             description = await description.replace('\r\n', ' ')
             description = await description.replace('  ', ' ')
         }
@@ -90,6 +92,8 @@ class WordController {
                 else if (await context[i].includes(' ' + en + 'ing')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + 'd')) context[i] = await context[i].replace(' ' + en, ' __')
                 else if (await context[i].includes(' ' + en + 'ed')) context[i] = await context[i].replace(' ' + en, ' __')
+                else if (await context[i].includes(' ' + en + ')')) context[i] = await context[i].replace(' ' + en, ' __')
+                else if (await context[i].includes('(' + en)) context[i] = await context[i].replace(en, '__')
                 else if (await context[i].includes(' ' + en + en[en.length - 1] + 'ed')) context[i] = await context[i].replace(' ' + en, ' __' + en[en.length - 1])
                 else if (await context[i].includes(' ' + en + en[en.length - 1] + 'ing')) context[i] = await context[i].replace(' ' + en, ' __' + en[en.length - 1])
                 else if (await context[i].includes(await ucFirst(en))) context[i] = await context[i].replace(await ucFirst(en), '__')
