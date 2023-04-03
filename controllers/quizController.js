@@ -64,12 +64,14 @@ class QuizController {
         })
         words.forEach(async el => {
             if (el.rating == 6) {
-                const { en, uk, description, context } = await Word.findOne({ en: el.en, chatId })
+                const { en, uk, description, context, topicId } = await Word.findOne({ en: el.en, chatId })
                 await Word.findOneAndDelete({ en: el.en, chatId })
                 if (!await Dictionary.findOne({ en })) {
                     let dict = new Dictionary({ en, uk, description, context })
                     return dict.save()
                 }
+                await Topic.findByIdAndDelete(topicId)
+                return bot.sendMessage(`✅ Congrats! You know all words from this 📒, so I delete it`)
             }
             else if (el.rating == lovest) {
                 questions.push(el.description)
