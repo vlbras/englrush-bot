@@ -16,7 +16,7 @@ class QuizController {
         let answers = []
         let words = await Word.find({ topicId: _id })
         if (!words.length) return bot.sendMessage(chatId, "❗️No words added")
-        
+
         let lovest = words[0].rating
         words.forEach(el => {
             if (el.rating < lovest) lovest = el.rating
@@ -97,7 +97,7 @@ class QuizController {
         let answers = []
         let words = await Word.find({ topicId: _id })
         if (!words.length) return bot.sendMessage(chatId, "❗️No words added")
-        if(words.length < 5) return bot.sendMessage(chatId, `❗️You need minimum 5 words in 📒`)
+        if (words.length < 5) return bot.sendMessage(chatId, `❗️You need minimum 5 words in 📒`)
 
         for await (const el of words) {
             let rand = Math.floor(Math.random() * (el.context.length))
@@ -135,6 +135,21 @@ class QuizController {
         let word = await Word.findOne({ en, chatId })
         await words.open(chatId, word._id)
         return bot.editMessageText(text + `\n\nIt's not easy ❌`, { chat_id: chatId, message_id: messageId })
+    }
+
+    async fixDictionary(chatId, en) {
+        let { topicId } = await Word.findOne({ en, chatId })
+        let words = await Word.find({ topicId })
+        console.log(words)
+        for await (const w of words){
+            let { en, uk, description, context } = w
+            if (!await Dictionary.findOne({ en })) {
+                let dict = new Dictionary({ en, uk, description, context })
+                await dict.save()
+            }
+            await Word.findOneAndDelete({en, chatId})
+            return bot.sendMessage(chatId, "Fixed!")
+        }
     }
 }
 

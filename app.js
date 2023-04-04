@@ -55,6 +55,7 @@ if (cluster.isWorker) {
         router('Word Quiz ▶', msg, quiz.word)
         router('Description ▶', msg, quiz.description)
         router('Context ▶', msg, quiz.context)
+        router('/fix', msg, quiz.fixDictionary)
     })
 
     bot.on('callback_query', msg => {
