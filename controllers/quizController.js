@@ -29,8 +29,6 @@ class QuizController {
                     let dict = new Dictionary({ en, uk, description, context })
                     await dict.save()
                 }
-                await Topic.findByIdAndDelete(topicId)
-                return bot.sendMessage(`✅ Congrats! You know all words from this 📒, so I delete it`)
             }
             else if (el.rating == lovest) {
                 questions.push(el.en)
@@ -70,8 +68,6 @@ class QuizController {
                     let dict = new Dictionary({ en, uk, description, context })
                     return dict.save()
                 }
-                await Topic.findByIdAndDelete(topicId)
-                return bot.sendMessage(`✅ Congrats! You know all words from this 📒, so I delete it`)
             }
             else if (el.rating == lovest) {
                 questions.push(el.description)
