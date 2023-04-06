@@ -15,19 +15,19 @@ class QuizController {
         let questions = []
         let answers = []
         let words = await Word.find({ topicId: _id })
-        if (!words.length) return bot.sendMessage(chatId, "❗️No words added")
+        if (!words.length) return bot.sendMessage(chatId, "❗️No words added or you have learned all words and you can delete this 📒")
 
         let lovest = words[0].rating
         words.forEach(el => {
             if (el.rating < lovest) lovest = el.rating
         })
         words.forEach(async el => {
-            if (el.rating == 6) {
+            if (el.rating >= 6) {
                 const { en, uk, description, context, topicId } = await Word.findOne({ en: el.en, chatId })
                 await Word.findOneAndDelete({ en: el.en, chatId })
                 if (!await Dictionary.findOne({ en })) {
                     let dict = new Dictionary({ en, uk, description, context })
-                    await dict.save()
+                    return dict.save()
                 }
             }
             else if (el.rating == lovest) {
@@ -54,14 +54,14 @@ class QuizController {
         let questions = []
         let answers = []
         let words = await Word.find({ topicId: _id })
-        if (!words.length) return bot.sendMessage(chatId, "❗️No words added")
+        if (!words.length) return bot.sendMessage(chatId, "❗️No words added or you have learned all words and you can delete this 📒")
 
         let lovest = words[0].rating
         words.forEach(el => {
             if (el.rating < lovest) lovest = el.rating
         })
         words.forEach(async el => {
-            if (el.rating == 6) {
+            if (el.rating >= 6) {
                 const { en, uk, description, context, topicId } = await Word.findOne({ en: el.en, chatId })
                 await Word.findOneAndDelete({ en: el.en, chatId })
                 if (!await Dictionary.findOne({ en })) {
