@@ -82,24 +82,8 @@ class WordController {
             context.push(ucFirst(element))
         })
         for (let i = 0; i < context.length; i++) {
-            for (let j = 0; j < 5; j++) {
-                if (await context[i].includes(' ' + en + ',')) context[i] = await context[i].replace(' ' + en + ',', ' __,')
-                else if (await context[i].includes(' ' + en + '.')) context[i] = await context[i].replace(' ' + en + '.', ' __.')
-                else if (await context[i].includes(' ' + en + 's')) context[i] = await context[i].replace(' ' + en, ' __')
-                else if (await context[i].includes(' ' + en + '’s')) context[i] = await context[i].replace(' ' + en, ' __')
-                else if (await context[i].includes(' ' + en + 'es')) context[i] = await context[i].replace(' ' + en, ' __')
-                else if (await context[i].includes(' ' + en + 'r')) context[i] = await context[i].replace(' ' + en, ' __')
-                else if (await context[i].includes(' ' + en + 'ing')) context[i] = await context[i].replace(' ' + en, ' __')
-                else if (await context[i].includes(' ' + en + 'd')) context[i] = await context[i].replace(' ' + en, ' __')
-                else if (await context[i].includes(' ' + en + 'ed')) context[i] = await context[i].replace(' ' + en, ' __')
-                else if (await context[i].includes(' ' + en + ')')) context[i] = await context[i].replace(' ' + en, ' __')
-                else if (await context[i].includes('(' + en)) context[i] = await context[i].replace(en, '__')
-                else if (await context[i].includes(' ' + en + en[en.length - 1] + 'ed')) context[i] = await context[i].replace(' ' + en, ' __' + en[en.length - 1])
-                else if (await context[i].includes(' ' + en + en[en.length - 1] + 'ing')) context[i] = await context[i].replace(' ' + en, ' __' + en[en.length - 1])
-                else if (await context[i].includes(await ucFirst(en))) context[i] = await context[i].replace(await ucFirst(en), '__')
-                else if (await context[i].includes(' ' + en + '?')) context[i] = await context[i].replace(' ' + en, ' __')
-                else if (await context[i].includes(' ' + en + '!')) context[i] = await context[i].replace(' ' + en, ' __')
-                else if (await context[i].includes(' ' + en + ' ')) context[i] = await context[i].replace(' ' + en + ' ', ' __ ')
+            while(await context[i].includes(en)){
+                context[i] = await context[i].replace(en, '__')
             }
         }
         let fixedContext = []
