@@ -74,7 +74,7 @@ class WordController {
         let context = []
 
         description = await ucFirst(description)
-        description = await description + '.'
+        // description = await description + '.'
         await sentences.forEach(el => {
             let element
             element = ucFirst(el)
