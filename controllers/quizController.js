@@ -22,7 +22,7 @@ class QuizController {
             if (el.rating < lovest) lovest = el.rating
         })
         words.forEach(async el => {
-            if (el.rating >= 6) {
+            if (el.rating >= 7) {
                 const { en, uk, description, context, topicId } = await Word.findOne({ en: el.en, chatId })
                 await Word.findOneAndDelete({ en: el.en, chatId })
                 if (!await Dictionary.findOne({ en })) {
@@ -61,7 +61,7 @@ class QuizController {
             if (el.rating < lovest) lovest = el.rating
         })
         words.forEach(async el => {
-            if (el.rating >= 6) {
+            if (el.rating >= 7) {
                 const { en, uk, description, context, topicId } = await Word.findOne({ en: el.en, chatId })
                 await Word.findOneAndDelete({ en: el.en, chatId })
                 if (!await Dictionary.findOne({ en })) {
